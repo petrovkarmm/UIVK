@@ -1,11 +1,13 @@
 from aiogram import F
 from aiogram_dialog import Dialog, Window
-from aiogram_dialog.widgets.kbd import ScrollingGroup, Column, Select, Button
+from aiogram_dialog.widgets.kbd import ScrollingGroup, Column, Select, Button, SwitchTo
 from aiogram_dialog.widgets.text import Format
 
 from app.dialogs.uivk_dialog.dataclasses.vacancy_dataclass import VACANCY_KEY
-from app.dialogs.uivk_dialog.getters.vacancy_faq_getter import vacancy_faq_getter
+from app.dialogs.uivk_dialog.dataclasses.vacancy_faq_dataclass import VACANCY_FAQ_KEY
+from app.dialogs.uivk_dialog.getters.vacancy_faq_getter import vacancy_faq_getter, vacancy_faq_id_getter
 from app.dialogs.uivk_dialog.getters.vacancy_getter import vacancy_id_getter, all_vacancy_getter
+from app.dialogs.uivk_dialog.on_click_functions.vacancy_faq_on_click import on_click_vacancy_faq_selected
 from app.dialogs.uivk_dialog.on_click_functions.vacancy_on_click import on_click_vacancy_selected
 from app.dialogs.uivk_dialog.uivk_dialog_states import UivkDialogStatesGroup
 
@@ -48,11 +50,38 @@ uivk_vacancy_faq_window = Window(
     Format(
         text='Выберите интересующий вас вопрос по вакансии:'
     ),
+    ScrollingGroup(
+        Column(
+            Select(
+                text=Format("{item.question}"),
+                id="faq_selected",
+                items=VACANCY_FAQ_KEY,
+                item_id_getter=vacancy_faq_id_getter,
+                on_click=on_click_vacancy_faq_selected,
+            ),
+        ),
+        width=2,
+        height=5,
+        id="scroll_faq",
+        hide_on_single_page=True,
+        when=F['vacancy_faq_data_flag']
+    ),
+    Format(
+        text='FAQ на данную должность отсутствует.',
+        when=~F['vacancy_faq_data_flag']
+    ),
+    Button(
+        id='update_faq', text=Format('Обновить'), on_click=None,
+        when=~F['vacancy_faq_data_flag']
+    ),
+    SwitchTo(
+        id='back_to_vacancy', text=Format('Назад'), state=UivkDialogStatesGroup.uivk_start_menu
+    ),
     getter=vacancy_faq_getter,
     state=UivkDialogStatesGroup.uivk_vacancy_faq
 )
 
 uivk_dialog = Dialog(
     uivk_start_window,
-    uivk_vacancy_faq_window
+    uivk_vacancy_faq_window,
 )
