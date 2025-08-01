@@ -7,4 +7,3 @@ VACANCY_KEY = 'vacancy'
 class Vacancy:
     id: int
     vacancy_name: str
-
