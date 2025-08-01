@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-VacancyFAQ_key = 'vacancy_faq'
+VACANCY_FAQ_KEY = 'vacancy_faq'
 
 
 @dataclass
