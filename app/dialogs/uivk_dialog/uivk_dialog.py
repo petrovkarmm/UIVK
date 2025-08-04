@@ -1,10 +1,11 @@
 from aiogram import F
 from aiogram_dialog import Dialog, Window
-from aiogram_dialog.widgets.kbd import ScrollingGroup, Column, Select, Button, SwitchTo
+from aiogram_dialog.widgets.kbd import ScrollingGroup, Column, Select, Button, SwitchTo, Row
 from aiogram_dialog.widgets.text import Format
 
 from app.dialogs.uivk_dialog.dataclasses.vacancy_dataclass import VACANCY_KEY
 from app.dialogs.uivk_dialog.dataclasses.vacancy_faq_dataclass import VACANCY_FAQ_KEY
+from app.dialogs.uivk_dialog.getters.vacancy_faq_answer_getter import vacancy_faq_answer_getter
 from app.dialogs.uivk_dialog.getters.vacancy_faq_getter import vacancy_faq_getter, vacancy_faq_id_getter
 from app.dialogs.uivk_dialog.getters.vacancy_getter import vacancy_id_getter, all_vacancy_getter
 from app.dialogs.uivk_dialog.on_click_functions.vacancy_faq_on_click import on_click_vacancy_faq_selected
@@ -75,13 +76,32 @@ uivk_vacancy_faq_window = Window(
         when=~F['vacancy_faq_data_flag']
     ),
     SwitchTo(
-        id='back_to_vacancy', text=Format('Назад'), state=UivkDialogStatesGroup.uivk_start_menu
+        id='to_vacancy', text=Format('Назад'), state=UivkDialogStatesGroup.uivk_start_menu
     ),
     getter=vacancy_faq_getter,
     state=UivkDialogStatesGroup.uivk_vacancy_faq
 )
 
+uivk_vacancy_faq_answer_window = Window(
+    Format(
+        text='ID FAQ: {test}'
+    ),
+    SwitchTo(
+        id='to_faq',
+        text=Format('Назад'),
+        state=UivkDialogStatesGroup.uivk_vacancy_faq
+    ),
+    SwitchTo(
+        id='to_vacancy',
+        text=Format('В меню вакансий'),
+        state=UivkDialogStatesGroup.uivk_start_menu
+    ),
+    getter=vacancy_faq_answer_getter,
+    state=UivkDialogStatesGroup.uivk_vacancy_faq_answer
+)
+
 uivk_dialog = Dialog(
     uivk_start_window,
     uivk_vacancy_faq_window,
+    uivk_vacancy_faq_answer_window
 )
