@@ -9,7 +9,9 @@ from aiogram.types import ErrorEvent, Message
 from aiogram_dialog import setup_dialogs, DialogManager
 from aiogram_dialog.api.exceptions import UnknownIntent, OutdatedIntent
 
+from app.dialogs.admin_panel_dialog.admin_panel_dialog_router import admin_panel_dialog_router
 from app.dialogs.uivk_dialog.uivk_dialog_router import uivk_dialog_router
+from app.routers.admin_panel.handlers import admin_panel
 from app.routers.start.handlers import start_router
 from app.logs.logger import bot_logger
 from app.settings import redis_connect_url, DEBUG, bot_test_token, bot_token
@@ -62,10 +64,12 @@ async def bot_start():
 
     # default routers
     dp.include_router(start_router)
+    dp.include_router(admin_panel)
 
     # dialogs routers
     setup_dialogs(dp)
     dp.include_router(uivk_dialog_router)
+    dp.include_router(admin_panel_dialog_router)
 
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
