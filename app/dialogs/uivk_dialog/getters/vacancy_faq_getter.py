@@ -7,11 +7,7 @@ from test_data import test_vacancy_data
 async def vacancy_faq_getter(dialog_manager: DialogManager, **_kwargs):
     vacancy_id = dialog_manager.dialog_data['vacancy_id']
 
-    print(vacancy_id),
-
-    all_vacancy_faq = current_vacancy_getter(vacancy_id=vacancy_id)
-
-    print(all_vacancy_faq)
+    all_vacancy_faq = current_vacancy_getter(vacancy_id=int(vacancy_id))
 
     # TODO Добавить логику форматирования названия, чтобы избежать
     # @staticmethod
@@ -38,8 +34,12 @@ def vacancy_faq_id_getter(vacancy_faq: VacancyFAQ) -> int:
     return vacancy_faq.id
 
 
-def current_vacancy_getter(vacancy_id: list):
+def current_vacancy_getter(vacancy_id: int):
     for vacancy in test_vacancy_data:
-        print(vacancy['id'])
+        print(vacancy_id, vacancy['id'])
+        print(vacancy['faq'])
         if vacancy_id == vacancy['id']:
+            print(vacancy['faq'])
             return vacancy['faq']
+
+    return []  # <= добавь это!
