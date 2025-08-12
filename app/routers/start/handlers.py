@@ -19,5 +19,5 @@ async def start_dialog_command(message: Message, state: FSMContext, dialog_manag
 @start_router.message(F.text)
 async def start_dialog_text(message: Message, state: FSMContext, dialog_manager: DialogManager):
     await dialog_manager.start(
-        UivkDialogStatesGroup.uivk_vacancy_faq
+        UivkDialogStatesGroup.uivk_start_menu
     )

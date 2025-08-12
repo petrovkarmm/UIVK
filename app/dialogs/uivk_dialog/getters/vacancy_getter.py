@@ -7,24 +7,16 @@ from test_data import test_vacancy_data
 
 
 async def all_vacancy_getter(dialog_manager: DialogManager, **_kwargs):
-    # TODO Добавить логику форматирования названия, чтобы избежать
-    # @staticmethod
-    # def formatted_feedback_text(feedback_text: str):
-    #     return f'{feedback_text[:15]}...'
+    vacancies = Vacancy.get_all()
+    vacancy_data_flag = bool(vacancies)
 
-    if test_vacancy_data:
-        vacancy_data_flag = True
-    else:
-        vacancy_data_flag = False
+    # Форматируем названия
+    for vacancy in vacancies:
+        vacancy.vacancy_name = Vacancy.format_name(vacancy.vacancy_name)
 
     return {
-        VACANCY_KEY: [
-            Vacancy(
-                id=vacancy['id'], vacancy_name=vacancy['vacancy_name']
-            )
-            for vacancy in test_vacancy_data
-        ],
-        'vacancy_data_flag': vacancy_data_flag
+        VACANCY_KEY: vacancies,
+        "vacancy_data_flag": vacancy_data_flag
     }
 
 

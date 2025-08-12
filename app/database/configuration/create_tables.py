@@ -1,7 +1,5 @@
 from app.database.configuration.connection import get_connection
 
-from app.database.configuration.connection import get_connection
-
 
 def create_tables():
     conn = get_connection()

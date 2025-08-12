@@ -83,21 +83,25 @@ uivk_vacancy_faq_window = Window(
 )
 
 uivk_vacancy_faq_answer_window = Window(
-    Format(
-        text='ID FAQ: {test}'
-    ),
+    # Показываем вопрос и ответ, если данные есть
+    Format("<b>Вопрос:</b>\n{question}\n\n<b>Ответ:</b>\n{answer}", when=F["faq_found"]),
+
+    # Если данных нет
+    Format("😅 Ой, что-то пошло не так", when=~F["faq_found"]),
+
     SwitchTo(
-        id='to_faq',
-        text=Format('Назад'),
+        id="to_faq",
+        text=Format("Назад"),
         state=UivkDialogStatesGroup.uivk_vacancy_faq
     ),
     SwitchTo(
-        id='to_vacancy',
-        text=Format('В меню вакансий'),
+        id="to_vacancy",
+        text=Format("В меню вакансий"),
         state=UivkDialogStatesGroup.uivk_start_menu
     ),
     getter=vacancy_faq_answer_getter,
-    state=UivkDialogStatesGroup.uivk_vacancy_faq_answer
+    state=UivkDialogStatesGroup.uivk_vacancy_faq_answer,
+    parse_mode="HTML"
 )
 
 uivk_dialog = Dialog(

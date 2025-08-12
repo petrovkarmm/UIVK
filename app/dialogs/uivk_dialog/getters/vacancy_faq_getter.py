@@ -5,27 +5,17 @@ from test_data import test_vacancy_data
 
 
 async def vacancy_faq_getter(dialog_manager: DialogManager, **_kwargs):
-    vacancy_id = dialog_manager.dialog_data['vacancy_id']
+    vacancy_id = int(dialog_manager.dialog_data['vacancy_id'])
 
-    all_vacancy_faq = current_vacancy_getter(vacancy_id=int(vacancy_id))
+    faqs = VacancyFAQ.get_by_vacancy_id(vacancy_id)
+    vacancy_faq_data_flag = bool(faqs)
 
-    # TODO Добавить логику форматирования названия, чтобы избежать
-    # @staticmethod
-    # def formatted_feedback_text(feedback_text: str):
-    #     return f'{feedback_text[:15]}...'
-
-    if all_vacancy_faq:
-        vacancy_faq_data_flag = True
-    else:
-        vacancy_faq_data_flag = False
+    # Форматируем вопросы
+    for faq in faqs:
+        faq.question = VacancyFAQ.format_question(faq.question)
 
     return {
-        VACANCY_FAQ_KEY: [
-            VacancyFAQ(
-                id=vacancy_faq['id'], question=vacancy_faq['question']
-            )
-            for vacancy_faq in all_vacancy_faq
-        ],
+        VACANCY_FAQ_KEY: faqs,
         'vacancy_faq_data_flag': vacancy_faq_data_flag
     }
 
