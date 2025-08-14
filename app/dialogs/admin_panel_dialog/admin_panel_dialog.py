@@ -1,11 +1,12 @@
 from aiogram import F
 from aiogram_dialog import Dialog, Window
-from aiogram_dialog.widgets.kbd import ScrollingGroup, Column, Select
+from aiogram_dialog.widgets.kbd import ScrollingGroup, Column, Select, Button
 from aiogram_dialog.widgets.text import Format
 
 from app.database.dataclasses.vacancy_dataclass import VACANCY_KEY
 from app.dialogs.admin_panel_dialog.admin_dialog_states import AdminPanelStatesGroup
 from app.dialogs.admin_panel_dialog.getters.admin_vacancy_getter import all_admin_vacancy_getter
+from app.dialogs.admin_panel_dialog.on_click_functions.admin_panel_on_click import go_to_bot_from_admin_panel
 from app.dialogs.uivk_dialog.getters.vacancy_getter import vacancy_id_getter
 from app.dialogs.uivk_dialog.on_click_functions.vacancy_on_click import on_click_vacancy_selected
 
@@ -33,6 +34,11 @@ admin_start_panel_window = Window(
     Format(
         text='На текущий момент вакансии отсутствуют. Нажмите Создать, чтобы добавить новую вакансию.',
         when=~F['vacancy_data_flag']
+    ),
+    Button(
+        id='back_to_bot', text=Format(
+            text='Назад в бота'),
+        on_click=go_to_bot_from_admin_panel
     ),
     getter=all_admin_vacancy_getter,
     state=AdminPanelStatesGroup.admin_panel_menu
