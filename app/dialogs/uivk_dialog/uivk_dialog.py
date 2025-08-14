@@ -3,11 +3,11 @@ from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.kbd import ScrollingGroup, Column, Select, Button, SwitchTo
 from aiogram_dialog.widgets.text import Format
 
-from app.database.dataclasses import VACANCY_KEY
+from app.database.dataclasses.vacancy_dataclass import VACANCY_KEY
 from app.database.dataclasses.vacancy_faq_dataclass import VACANCY_FAQ_KEY
 from app.dialogs.uivk_dialog.getters.vacancy_faq_answer_getter import vacancy_faq_answer_getter
 from app.dialogs.uivk_dialog.getters.vacancy_faq_getter import vacancy_faq_getter, vacancy_faq_id_getter
-from app.dialogs.uivk_dialog.getters.vacancy_getter import vacancy_id_getter, all_vacancy_getter
+from app.dialogs.uivk_dialog.getters.vacancy_getter import vacancy_id_getter, all_unhidden_vacancy_getter
 from app.dialogs.uivk_dialog.on_click_functions.vacancy_faq_on_click import on_click_vacancy_faq_selected
 from app.dialogs.uivk_dialog.on_click_functions.vacancy_on_click import on_click_vacancy_selected
 from app.dialogs.uivk_dialog.uivk_dialog_states import UivkDialogStatesGroup
@@ -43,7 +43,7 @@ uivk_start_window = Window(
         id='update_vacancy', text=Format('Обновить'), on_click=None,
         when=~F['vacancy_data_flag']
     ),
-    getter=all_vacancy_getter,
+    getter=all_unhidden_vacancy_getter,
     state=UivkDialogStatesGroup.uivk_start_menu
 )
 
