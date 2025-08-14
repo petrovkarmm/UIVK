@@ -63,8 +63,8 @@ async def bot_start():
     # dp.callback_query.middleware.register(GlobalLogger())
 
     # default routers
-    dp.include_router(start_router)
     dp.include_router(admin_panel)
+    dp.include_router(start_router)
 
     # dialogs routers
     setup_dialogs(dp)
