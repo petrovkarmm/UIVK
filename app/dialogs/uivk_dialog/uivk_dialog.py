@@ -1,10 +1,10 @@
 from aiogram import F
 from aiogram_dialog import Dialog, Window
-from aiogram_dialog.widgets.kbd import ScrollingGroup, Column, Select, Button, SwitchTo, Row
+from aiogram_dialog.widgets.kbd import ScrollingGroup, Column, Select, Button, SwitchTo
 from aiogram_dialog.widgets.text import Format
 
-from app.dialogs.uivk_dialog.dataclasses.vacancy_dataclass import VACANCY_KEY
-from app.dialogs.uivk_dialog.dataclasses.vacancy_faq_dataclass import VACANCY_FAQ_KEY
+from app.database.dataclasses import VACANCY_KEY
+from app.database.dataclasses.vacancy_faq_dataclass import VACANCY_FAQ_KEY
 from app.dialogs.uivk_dialog.getters.vacancy_faq_answer_getter import vacancy_faq_answer_getter
 from app.dialogs.uivk_dialog.getters.vacancy_faq_getter import vacancy_faq_getter, vacancy_faq_id_getter
 from app.dialogs.uivk_dialog.getters.vacancy_getter import vacancy_id_getter, all_vacancy_getter

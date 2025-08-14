@@ -1,9 +1,6 @@
-from pprint import pprint
-
 from aiogram_dialog import DialogManager
 
-from app.dialogs.uivk_dialog.dataclasses.vacancy_dataclass import Vacancy, VACANCY_KEY
-from test_data import test_vacancy_data
+from app.database.dataclasses.vacancy_dataclass import Vacancy, VACANCY_KEY
 
 
 async def all_vacancy_getter(dialog_manager: DialogManager, **_kwargs):

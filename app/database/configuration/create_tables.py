@@ -10,6 +10,7 @@ def create_tables():
     CREATE TABLE IF NOT EXISTS vacancy (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
+        hidden BOOLEAN DEFAULT 1,
         created DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated DATETIME DEFAULT CURRENT_TIMESTAMP
     )

@@ -1,6 +1,6 @@
 from aiogram_dialog import DialogManager
 
-from app.dialogs.uivk_dialog.dataclasses.vacancy_faq_dataclass import VACANCY_FAQ_KEY, VacancyFAQ
+from app.database.dataclasses.vacancy_faq_dataclass import VACANCY_FAQ_KEY, VacancyFAQ
 from test_data import test_vacancy_data
 
 
