@@ -1,13 +1,21 @@
 from aiogram import F
 from aiogram_dialog import Dialog, Window
-from aiogram_dialog.widgets.kbd import ScrollingGroup, Column, Select, Button
+from aiogram_dialog.widgets.kbd import ScrollingGroup, Column, Select, Button, Row, SwitchTo
 from aiogram_dialog.widgets.text import Format
 
 from app.database.dataclasses.vacancy_dataclass import VACANCY_KEY
+from app.database.dataclasses.vacancy_faq_dataclass import VACANCY_FAQ_KEY
 from app.dialogs.admin_panel_dialog.admin_dialog_states import AdminPanelStatesGroup
 from app.dialogs.admin_panel_dialog.getters.admin_vacancy_getter import all_admin_vacancy_getter
+from app.dialogs.admin_panel_dialog.on_click_functions.admin_panel_faq_on_click import \
+    on_click_vacancy_faq_admin_panel_selected
 from app.dialogs.admin_panel_dialog.on_click_functions.admin_panel_on_click import go_to_bot_from_admin_panel
+from app.dialogs.admin_panel_dialog.on_click_functions.admin_panel_vacancy_on_click import \
+    on_click_vacancy_admin_panel_selected
+from app.dialogs.uivk_dialog.getters.vacancy_faq_answer_getter import vacancy_faq_answer_getter
+from app.dialogs.uivk_dialog.getters.vacancy_faq_getter import vacancy_faq_id_getter, vacancy_faq_getter
 from app.dialogs.uivk_dialog.getters.vacancy_getter import vacancy_id_getter
+from app.dialogs.uivk_dialog.on_click_functions.vacancy_faq_on_click import on_click_vacancy_faq_selected
 from app.dialogs.uivk_dialog.on_click_functions.vacancy_on_click import on_click_vacancy_selected
 
 admin_start_panel_window = Window(
@@ -22,7 +30,7 @@ admin_start_panel_window = Window(
                 id="adm_vacancy_selected",
                 items=VACANCY_KEY,
                 item_id_getter=vacancy_id_getter,
-                on_click=on_click_vacancy_selected,
+                on_click=on_click_vacancy_admin_panel_selected,
             ),
         ),
         width=2,
@@ -37,13 +45,59 @@ admin_start_panel_window = Window(
     ),
     Button(
         id='back_to_bot', text=Format(
-            text='Назад в бота'),
+            text='Назад в бота'
+        ),
         on_click=go_to_bot_from_admin_panel
     ),
     getter=all_admin_vacancy_getter,
     state=AdminPanelStatesGroup.admin_panel_menu
 )
 
+admin_vacancy_faq_answer_window = Window(
+    Format(
+        text='Выберите интересующий вас вопрос по вакансии:',
+        when=F['vacancy_faq_data_flag']
+    ),
+    Format(
+        text='FAQ на данную должность отсутствует.',
+        when=~F['vacancy_faq_data_flag']
+    ),
+    ScrollingGroup(
+        Column(
+            Select(
+                text=Format("{item.question}"),
+                id="faq_selected",
+                items=VACANCY_FAQ_KEY,
+                item_id_getter=vacancy_faq_id_getter,
+                on_click=on_click_vacancy_faq_admin_panel_selected,
+            ),
+        ),
+        width=2,
+        height=5,
+        id="scroll_faq",
+        hide_on_single_page=True,
+        when=F['vacancy_faq_data_flag']
+    ),
+    Button(
+        id='update_faq', text=Format('Обновить'), on_click=None,
+        when=~F['vacancy_faq_data_flag']
+    ),
+    SwitchTo(
+        id='back_to_start',
+        text=Format('Назад в меню'),
+        state=AdminPanelStatesGroup.admin_panel_menu
+    ),
+    Button(
+        id='back_to_bot', text=Format(
+            text='Назад в бота'),
+        on_click=go_to_bot_from_admin_panel
+    ),
+    getter=vacancy_faq_getter,
+    state=AdminPanelStatesGroup.admin_panel_vacancy_and_questions,
+    parse_mode="HTML"
+)
+
 admin_panel_dialog = Dialog(
-    admin_start_panel_window
+    admin_start_panel_window,
+    admin_vacancy_faq_answer_window
 )
