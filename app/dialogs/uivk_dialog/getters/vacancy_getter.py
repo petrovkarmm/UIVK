@@ -16,6 +16,5 @@ async def all_unhidden_vacancy_getter(dialog_manager: DialogManager, **_kwargs):
     }
 
 
-
 def vacancy_id_getter(vacancy: Vacancy) -> int:
     return vacancy.id
