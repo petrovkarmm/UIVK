@@ -1,6 +1,6 @@
 from aiogram import F
 from aiogram_dialog import Dialog, Window
-from aiogram_dialog.widgets.kbd import ScrollingGroup, Column, Select, Button, SwitchTo
+from aiogram_dialog.widgets.kbd import ScrollingGroup, Column, Select, Button, SwitchTo, Row
 from aiogram_dialog.widgets.text import Format
 
 from app.database.dataclasses.vacancy_dataclass import VACANCY_KEY
@@ -49,7 +49,12 @@ uivk_start_window = Window(
 
 uivk_vacancy_faq_window = Window(
     Format(
-        text='Выберите интересующий вас вопрос по вакансии:'
+        text='Выберите интересующий вас вопрос по вакансии:',
+        when=F['vacancy_faq_data_flag']
+    ),
+    Format(
+        text='FAQ на данную должность отсутствует.',
+        when=~F['vacancy_faq_data_flag']
     ),
     ScrollingGroup(
         Column(
@@ -67,10 +72,6 @@ uivk_vacancy_faq_window = Window(
         hide_on_single_page=True,
         when=F['vacancy_faq_data_flag']
     ),
-    Format(
-        text='FAQ на данную должность отсутствует.',
-        when=~F['vacancy_faq_data_flag']
-    ),
     Button(
         id='update_faq', text=Format('Обновить'), on_click=None,
         when=~F['vacancy_faq_data_flag']
@@ -79,26 +80,23 @@ uivk_vacancy_faq_window = Window(
         id='to_vacancy', text=Format('Назад'), state=UivkDialogStatesGroup.uivk_start_menu
     ),
     getter=vacancy_faq_getter,
-    state=UivkDialogStatesGroup.uivk_vacancy_faq
+    state=UivkDialogStatesGroup.uivk_vacancy_and_questions
 )
 
 uivk_vacancy_faq_answer_window = Window(
-    # Показываем вопрос и ответ, если данные есть
     Format("<b>Вопрос:</b>\n{question}\n\n<b>Ответ:</b>\n{answer}", when=F["faq_found"]),
-
-    # Если данных нет
     Format("😅 Ой, что-то пошло не так", when=~F["faq_found"]),
-
-    SwitchTo(
-        id="to_faq",
-        text=Format("Назад"),
-        state=UivkDialogStatesGroup.uivk_vacancy_faq
-    ),
-    SwitchTo(
-        id="to_vacancy",
-        text=Format("В меню вакансий"),
-        state=UivkDialogStatesGroup.uivk_start_menu
-    ),
+    Row(
+        SwitchTo(
+            id="to_faq",
+            text=Format("Назад"),
+            state=UivkDialogStatesGroup.uivk_vacancy_and_questions
+        ),
+        SwitchTo(
+            id="to_vacancy",
+            text=Format("В меню вакансий"),
+            state=UivkDialogStatesGroup.uivk_start_menu
+        )),
     getter=vacancy_faq_answer_getter,
     state=UivkDialogStatesGroup.uivk_vacancy_faq_answer,
     parse_mode="HTML"
