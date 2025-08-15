@@ -15,5 +15,5 @@ async def on_click_vacancy_selected(
     dialog_manager.dialog_data['vacancy_id'] = vacancy_id
 
     await dialog_manager.switch_to(
-        UivkDialogStatesGroup.uivk_vacancy_faq
+        UivkDialogStatesGroup.uivk_vacancy_and_questions
     )
