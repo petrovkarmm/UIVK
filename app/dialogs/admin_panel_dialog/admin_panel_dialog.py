@@ -78,23 +78,43 @@ admin_vacancy_faq_answer_window = Window(
         hide_on_single_page=True,
         when=F['vacancy_faq_data_flag']
     ),
+    SwitchTo(
+        id='to_creating',
+        text=Format('Добавить FAQ'),
+        state=AdminPanelStatesGroup.admin_panel_vacancy_faq_creating
+    ),
+    SwitchTo(
+        id='to_deleting',
+        text=Format('Удалить вакансию'),
+        state=AdminPanelStatesGroup.admin_panel_vacancy_deleting
+    ),
     Button(
         id='update_faq', text=Format('Обновить'), on_click=None,
         when=~F['vacancy_faq_data_flag']
     ),
-    SwitchTo(
-        id='back_to_start',
-        text=Format('Назад в меню'),
-        state=AdminPanelStatesGroup.admin_panel_menu
-    ),
-    Button(
-        id='back_to_bot', text=Format(
-            text='Назад в бота'),
-        on_click=go_to_bot_from_admin_panel
+    Row(
+        SwitchTo(
+            id='back_to_start',
+            text=Format('Назад в меню'),
+            state=AdminPanelStatesGroup.admin_panel_menu
+        ),
+        Button(
+            id='back_to_bot', text=Format(
+                text='Назад в бота'),
+            on_click=go_to_bot_from_admin_panel
+        )
     ),
     getter=vacancy_faq_getter,
     state=AdminPanelStatesGroup.admin_panel_vacancy_and_questions,
     parse_mode="HTML"
+)
+
+admin_vacancy_deleting_window = Window(
+    Format(
+        text='Вы уверены, то хотите удалить вакансию: ""?'
+    ),
+    getter=None,
+    state=AdminPanelStatesGroup.admin_panel_vacancy_deleting
 )
 
 admin_panel_dialog = Dialog(

@@ -18,3 +18,6 @@ async def all_admin_vacancy_getter(dialog_manager: DialogManager, **_kwargs):
         "vacancy_data_flag": vacancy_data_flag
     }
 
+
+async def admin_current_vacancy_getter():
+    pass # TODO добавить код на геттер для удаления
