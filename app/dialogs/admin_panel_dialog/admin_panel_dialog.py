@@ -6,7 +6,10 @@ from aiogram_dialog.widgets.text import Format
 from app.database.dataclasses.vacancy_dataclass import VACANCY_KEY
 from app.database.dataclasses.vacancy_faq_dataclass import VACANCY_FAQ_KEY
 from app.dialogs.admin_panel_dialog.admin_dialog_states import AdminPanelStatesGroup
-from app.dialogs.admin_panel_dialog.getters.admin_vacancy_getter import all_admin_vacancy_getter
+from app.dialogs.admin_panel_dialog.getters.admin_vacancy_getter import all_admin_vacancy_getter, \
+    admin_current_vacancy_getter
+from app.dialogs.admin_panel_dialog.on_click_functions.admin_panel_delete_vacancy_on_click import \
+    on_click_delete_vacancy
 from app.dialogs.admin_panel_dialog.on_click_functions.admin_panel_faq_on_click import \
     on_click_vacancy_faq_admin_panel_selected
 from app.dialogs.admin_panel_dialog.on_click_functions.admin_panel_on_click import go_to_bot_from_admin_panel
@@ -42,6 +45,9 @@ admin_start_panel_window = Window(
     Format(
         text='На текущий момент вакансии отсутствуют. Нажмите Создать, чтобы добавить новую вакансию.',
         when=~F['vacancy_data_flag']
+    ),
+    SwitchTo(
+        id='to_new_vacancy', text=Format('Создать вакансию'), state=AdminPanelStatesGroup.admin_panel_vacancy_creating
     ),
     Button(
         id='back_to_bot', text=Format(
@@ -111,13 +117,49 @@ admin_vacancy_faq_answer_window = Window(
 
 admin_vacancy_deleting_window = Window(
     Format(
-        text='Вы уверены, то хотите удалить вакансию: ""?'
+        text='Данные: создание: {vacancy_created} редактирование {vacancy_updated}\n'
+             'Вы уверенны, что хотите удалить вакансию "{vacancy_name}". Статус - {vacancy_status}?'
     ),
-    getter=None,
+    Button(
+        id='delete_vac', text=Format('Удалить'), on_click=on_click_delete_vacancy
+    ),
+    Row(
+        SwitchTo(
+            id='back_to_start',
+            text=Format('Назад в меню'),
+            state=AdminPanelStatesGroup.admin_panel_menu
+        ),
+        Button(
+            id='back_to_bot', text=Format(
+                text='Назад в бота'),
+            on_click=go_to_bot_from_admin_panel
+        )
+    ),
+    getter=admin_current_vacancy_getter,
     state=AdminPanelStatesGroup.admin_panel_vacancy_deleting
+)
+
+admin_vacancy_creating_window = Window(
+    Format(
+        text='Этап создания вакансии'
+    ),
+    Row(
+        SwitchTo(
+            id='back_to_start',
+            text=Format('Назад в меню'),
+            state=AdminPanelStatesGroup.admin_panel_menu
+        ),
+        Button(
+            id='back_to_bot', text=Format(
+                text='Назад в бота'),
+            on_click=go_to_bot_from_admin_panel
+        )
+    ),
+    state=AdminPanelStatesGroup.admin_panel_vacancy_creating
 )
 
 admin_panel_dialog = Dialog(
     admin_start_panel_window,
-    admin_vacancy_faq_answer_window
+    admin_vacancy_faq_answer_window,
+    admin_vacancy_deleting_window
 )
