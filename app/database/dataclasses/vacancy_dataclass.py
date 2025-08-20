@@ -73,3 +73,18 @@ class Vacancy:
         conn.close()
 
         return rows_deleted > 0
+
+    @classmethod
+    def create_new(cls, vacancy_name: str):
+        """Создаёт новую вакансию. Объект новой вакансии"""
+        conn = get_connection()
+        cursor = conn.cursor
+        cursor.execute(f"INSERT INTO vacancy (title, hidden) VALUES ({vacancy_name}, 1)")
+        conn.commit()
+        new_row = cursor.fetchone()
+        conn.close()
+
+        return (
+            cls(id=new_row[0], vacancy_name=new_row[1], hidden_status=new_row[2], created=new_row[3],
+                updated=new_row[4])
+        )
