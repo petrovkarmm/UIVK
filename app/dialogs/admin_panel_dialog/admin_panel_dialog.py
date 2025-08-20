@@ -65,7 +65,7 @@ admin_vacancy_faq_answer_window = Window(
         when=F['vacancy_faq_data_flag']
     ),
     Format(
-        text='FAQ на данную должность отсутствует.',
+        text='FAQ на данную должность отсутствует.', # TODO передавать имя вакансии и отображать текстом тут.
         when=~F['vacancy_faq_data_flag']
     ),
     ScrollingGroup(
@@ -141,7 +141,10 @@ admin_vacancy_deleting_window = Window(
 
 admin_vacancy_creating_window = Window(
     Format(
-        text='Этап создания вакансии'
+        text='Введите новое название вакансии'
+    ),
+    MessageInput(
+        new_vacancy_name_input
     ),
     Row(
         SwitchTo(
