@@ -41,3 +41,24 @@ class VacancyFAQ:
         row = cursor.fetchone()
         conn.close()
         return cls(id=row[0], vacancy_id=row[1], question=row[2], answer=row[3]) if row else None
+
+    @classmethod
+    def create_new(cls, vacancy_id: int, question: str, answer: str) -> "VacancyFAQ":
+        """Создаёт новый FAQ и возвращает объект VacancyFAQ."""
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO faq (vacancy_id, question, answer) VALUES (?, ?, ?)",
+            (vacancy_id, question, answer)
+        )
+        conn.commit()
+
+        new_id = cursor.lastrowid
+        cursor.execute(
+            "SELECT id, vacancy_id, question, answer FROM faq WHERE id = ?",
+            (new_id,)
+        )
+        row = cursor.fetchone()
+        conn.close()
+
+        return cls(id=row[0], vacancy_id=row[1], question=row[2], answer=row[3])

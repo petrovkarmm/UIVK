@@ -8,7 +8,7 @@ async def all_unhidden_vacancy_getter(dialog_manager: DialogManager, **_kwargs):
     vacancy_data_flag = bool(vacancies)
 
     for vacancy in vacancies:
-        vacancy.vacancy_name = Vacancy.format_name(vacancy.vacancy_name)
+        vacancy.title = Vacancy.format_title(vacancy.title)
 
     return {
         VACANCY_KEY: vacancies,

@@ -62,14 +62,11 @@ async def bot_start():
     # logger mw
     # dp.callback_query.middleware.register(GlobalLogger())
 
-    # default routers
-    dp.include_router(admin_panel)
-    dp.include_router(start_router)
-
-    # dialogs routers
     setup_dialogs(dp)
-    dp.include_router(uivk_dialog_router)
+    dp.include_router(admin_panel)
     dp.include_router(admin_panel_dialog_router)
+    dp.include_router(uivk_dialog_router)
+    dp.include_router(start_router)
 
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)

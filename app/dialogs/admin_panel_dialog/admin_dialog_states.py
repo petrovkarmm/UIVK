@@ -8,6 +8,9 @@ class AdminPanelStatesGroup(StatesGroup):
     admin_panel_vacancy_deleting = State()
 
     admin_panel_vacancy_faq_answer = State()
-    admin_panel_vacancy_faq_creating = State()
+
+    admin_panel_vacancy_faq_question_creating = State()
+    admin_panel_vacancy_faq_answer_creating = State()
+    admin_panel_vacancy_faq_accept_creating = State()
 
     admin_panel_vacancy_creating = State()

@@ -3,6 +3,7 @@ from typing import Any
 from aiogram.types import CallbackQuery
 from aiogram_dialog import DialogManager
 
+from app.database.dataclasses.vacancy_dataclass import Vacancy
 from app.dialogs.uivk_dialog.uivk_dialog_states import UivkDialogStatesGroup
 
 

@@ -1,5 +1,6 @@
 from aiogram_dialog import DialogManager
 
+from app.database.dataclasses.vacancy_dataclass import Vacancy
 from app.database.dataclasses.vacancy_faq_dataclass import VACANCY_FAQ_KEY, VacancyFAQ
 from test_data import test_vacancy_data
 
@@ -7,7 +8,10 @@ from test_data import test_vacancy_data
 async def vacancy_faq_getter(dialog_manager: DialogManager, **_kwargs):
     vacancy_id = int(dialog_manager.dialog_data['vacancy_id'])
 
-    faqs = VacancyFAQ.get_by_vacancy_id(vacancy_id)
+
+    faqs = VacancyFAQ.get_by_vacancy_id(vacancy_id=vacancy_id)
+    vacancy_data = Vacancy.get_by_id(vacancy_id=vacancy_id)
+
     vacancy_faq_data_flag = bool(faqs)
 
     # Форматируем вопросы
@@ -16,6 +20,7 @@ async def vacancy_faq_getter(dialog_manager: DialogManager, **_kwargs):
 
     return {
         VACANCY_FAQ_KEY: faqs,
+        'vacancy_title': vacancy_data.title,
         'vacancy_faq_data_flag': vacancy_faq_data_flag
     }
 

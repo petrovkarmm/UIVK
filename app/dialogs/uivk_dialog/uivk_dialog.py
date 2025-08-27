@@ -22,7 +22,7 @@ uivk_start_window = Window(
     ScrollingGroup(
         Column(
             Select(
-                text=Format("{item.vacancy_name}"),
+                text=Format("{item.title}"),
                 id="vacancy_selected",
                 items=VACANCY_KEY,
                 item_id_getter=vacancy_id_getter,
@@ -49,11 +49,11 @@ uivk_start_window = Window(
 
 uivk_vacancy_faq_window = Window(
     Format(
-        text='Выберите интересующий вас вопрос по вакансии:',
+        text='Выберите интересующий вас вопрос по вакансии {vacancy_title}:',
         when=F['vacancy_faq_data_flag']
     ),
     Format(
-        text='FAQ на данную должность отсутствует.',
+        text='FAQ на должность {vacancy_title} отсутствует.',
         when=~F['vacancy_faq_data_flag']
     ),
     ScrollingGroup(
@@ -86,17 +86,16 @@ uivk_vacancy_faq_window = Window(
 uivk_vacancy_faq_answer_window = Window(
     Format("<b>Вопрос:</b>\n{question}\n\n<b>Ответ:</b>\n{answer}", when=F["faq_found"]),
     Format("😅 Ой, что-то пошло не так", when=~F["faq_found"]),
-    Row(
-        SwitchTo(
-            id="to_faq",
-            text=Format("Назад"),
-            state=UivkDialogStatesGroup.uivk_vacancy_and_questions
-        ),
-        SwitchTo(
-            id="to_vacancy",
-            text=Format("В меню вакансий"),
-            state=UivkDialogStatesGroup.uivk_start_menu
-        )),
+    SwitchTo(
+        id="to_faq",
+        text=Format("Назад"),
+        state=UivkDialogStatesGroup.uivk_vacancy_and_questions
+    ),
+    SwitchTo(
+        id="to_vacancy",
+        text=Format("В меню вакансий"),
+        state=UivkDialogStatesGroup.uivk_start_menu
+    ),
     getter=vacancy_faq_answer_getter,
     state=UivkDialogStatesGroup.uivk_vacancy_faq_answer,
     parse_mode="HTML"

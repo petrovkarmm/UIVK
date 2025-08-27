@@ -9,21 +9,21 @@ VACANCY_KEY = 'vacancy'
 @dataclass
 class Vacancy:
     id: int
-    vacancy_name: str
-    hidden_status: bool
+    title: str
+    hidden: bool
     created: str
     updated: str
 
     @staticmethod
-    def format_name(name: str) -> str:
+    def format_title(title: str) -> str:
         """Обрезает название вакансии, если оно слишком длинное."""
-        return f"{name[:20]}..." if len(name) > 23 else name
+        return f"{title[:20]}..." if len(title) > 23 else title
 
     @staticmethod
-    def formatted_hidden_vacancy(name: str, hidden_status: bool) -> str:
+    def formatted_title_hidden_vacancy(title: str, hidden: bool) -> str:
         """Форматирует название вакансии с учётом скрытого статуса."""
-        formatted_name = Vacancy.format_name(name)
-        return f"🔒 {formatted_name}" if hidden_status else formatted_name
+        formatted_title = Vacancy.format_title(title)
+        return f"🔒 {formatted_title}" if hidden else formatted_title
 
     @classmethod
     def get_all(cls, include_hidden: bool = True) -> List["Vacancy"]:
@@ -40,8 +40,13 @@ class Vacancy:
         conn.close()
 
         return [
-            cls(id=row[0], vacancy_name=row[1], hidden_status=bool(row[2]),
-                created=row[3], updated=row[4])
+            cls(
+                id=row[0],
+                title=row[1],
+                hidden=bool(row[2]),
+                created=row[3],
+                updated=row[4]
+            )
             for row in rows
         ]
 
@@ -51,14 +56,20 @@ class Vacancy:
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT id, title, hidden, created, updated FROM vacancy WHERE id = ?", (vacancy_id,)
+            "SELECT id, title, hidden, created, updated FROM vacancy WHERE id = ?",
+            (vacancy_id,)
         )
         row = cursor.fetchone()
         conn.close()
 
         return (
-            cls(id=row[0], vacancy_name=row[1], hidden_status=bool(row[2]),
-                created=row[3], updated=row[4])
+            cls(
+                id=row[0],
+                title=row[1],
+                hidden=bool(row[2]),
+                created=row[3],
+                updated=row[4]
+            )
             if row else None
         )
 
@@ -71,20 +82,32 @@ class Vacancy:
         conn.commit()
         rows_deleted = cursor.rowcount
         conn.close()
-
         return rows_deleted > 0
 
     @classmethod
-    def create_new(cls, vacancy_name: str):
-        """Создаёт новую вакансию. Объект новой вакансии"""
+    def create_new(cls, title: str) -> "Vacancy":
+        """Создаёт новую вакансию и возвращает объект."""
         conn = get_connection()
-        cursor = conn.cursor
-        cursor.execute(f"INSERT INTO vacancy (title, hidden) VALUES ({vacancy_name}, 1)")
+        cursor = conn.cursor()
+
+        cursor.execute(
+            "INSERT INTO vacancy (title, hidden) VALUES (?, ?)",
+            (title, 1)
+        )
         conn.commit()
-        new_row = cursor.fetchone()
+
+        new_id = cursor.lastrowid
+        cursor.execute(
+            "SELECT id, title, hidden, created, updated FROM vacancy WHERE id = ?",
+            (new_id,)
+        )
+        row = cursor.fetchone()
         conn.close()
 
-        return (
-            cls(id=new_row[0], vacancy_name=new_row[1], hidden_status=new_row[2], created=new_row[3],
-                updated=new_row[4])
+        return cls(
+            id=row[0],
+            title=row[1],
+            hidden=bool(row[2]),
+            created=row[3],
+            updated=row[4]
         )
