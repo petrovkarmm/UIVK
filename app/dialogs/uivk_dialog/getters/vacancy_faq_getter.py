@@ -11,6 +11,9 @@ async def vacancy_faq_getter(dialog_manager: DialogManager, **_kwargs):
 
     faqs = VacancyFAQ.get_by_vacancy_id(vacancy_id=vacancy_id)
     vacancy_data = Vacancy.get_by_id(vacancy_id=vacancy_id)
+    vacancy_hidden_status = vacancy_data.hidden
+
+    vacancy_hidden_status_text = Vacancy.format_hidden_button(hidden=vacancy_hidden_status)
 
     vacancy_faq_data_flag = bool(faqs)
 
@@ -21,6 +24,7 @@ async def vacancy_faq_getter(dialog_manager: DialogManager, **_kwargs):
     return {
         VACANCY_FAQ_KEY: faqs,
         'vacancy_title': vacancy_data.title,
+        'vacancy_hidden_status': vacancy_hidden_status_text,
         'vacancy_faq_data_flag': vacancy_faq_data_flag
     }
 
@@ -31,10 +35,7 @@ def vacancy_faq_id_getter(vacancy_faq: VacancyFAQ) -> int:
 
 def current_vacancy_getter(vacancy_id: int):
     for vacancy in test_vacancy_data:
-        print(vacancy_id, vacancy['id'])
-        print(vacancy['faq'])
         if vacancy_id == vacancy['id']:
-            print(vacancy['faq'])
             return vacancy['faq']
 
     return []  # <= добавь это!

@@ -20,10 +20,32 @@ class Vacancy:
         return f"{title[:20]}..." if len(title) > 23 else title
 
     @staticmethod
+    def format_hidden_button(hidden: bool) -> str:
+        return f"🔒 вакансия скрыта" if hidden else '🔓 вакансия видна'
+
+    @staticmethod
     def formatted_title_hidden_vacancy(title: str, hidden: bool) -> str:
         """Форматирует название вакансии с учётом скрытого статуса."""
         formatted_title = Vacancy.format_title(title)
         return f"🔒 {formatted_title}" if hidden else formatted_title
+
+    @classmethod
+    def toggle_hidden(cls, vacancy_id: int) -> None:
+        """Переключает статус hidden у вакансии по её id."""
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT hidden FROM vacancy WHERE id = ?", (vacancy_id,))
+        row = cursor.fetchone()
+
+        if row is None:
+            conn.close()
+            raise ValueError(f"Vacancy with id={vacancy_id} not found")
+
+        new_status = not bool(row[0])
+        cursor.execute("UPDATE vacancy SET hidden = ?, updated = CURRENT_TIMESTAMP WHERE id = ?",
+                       (new_status, vacancy_id))
+        conn.commit()
+        conn.close()
 
     @classmethod
     def get_all(cls, include_hidden: bool = True) -> List["Vacancy"]:

@@ -28,9 +28,6 @@ async def admin_current_vacancy_getter(dialog_manager: DialogManager, **_kwargs)
     vacancy_created = vacancy_data.created
     vacancy_updated = vacancy_data.updated
 
-    print(vacancy_updated)
-    print(vacancy_created)
-
     if vacancy_hidden_status:
         vacancy_status = "скрыта"
     else:

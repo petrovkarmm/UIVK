@@ -1,7 +1,7 @@
 from aiogram import F
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.input import MessageInput
-from aiogram_dialog.widgets.kbd import ScrollingGroup, Column, Select, Button, Row, SwitchTo
+from aiogram_dialog.widgets.kbd import ScrollingGroup, Column, Select, Button, SwitchTo
 from aiogram_dialog.widgets.text import Format
 
 from app.database.dataclasses.vacancy_dataclass import VACANCY_KEY
@@ -14,8 +14,11 @@ from app.dialogs.admin_panel_dialog.getters.admin_vacancy_getter import all_admi
 from app.dialogs.admin_panel_dialog.message_inputs.new_vacancy_answer_question_input import new_faq_answer_input
 from app.dialogs.admin_panel_dialog.message_inputs.new_vacancy_faq_question_input import new_faq_question_input
 from app.dialogs.admin_panel_dialog.message_inputs.new_vacancy_name_message_input import new_vacancy_title_input
+from app.dialogs.admin_panel_dialog.on_click_functions.admin_panel_change_hidden_status_on_click import \
+    on_click_change_vacancy_hidden_status
 from app.dialogs.admin_panel_dialog.on_click_functions.admin_panel_create_new_faq_on_click import \
     on_click_create_new_faq
+from app.dialogs.admin_panel_dialog.on_click_functions.admin_panel_delete_faq import on_click_delete_faq
 from app.dialogs.admin_panel_dialog.on_click_functions.admin_panel_delete_vacancy_on_click import \
     on_click_delete_vacancy
 from app.dialogs.admin_panel_dialog.on_click_functions.admin_panel_faq_on_click import \
@@ -26,18 +29,17 @@ from app.dialogs.admin_panel_dialog.on_click_functions.admin_panel_vacancy_on_cl
 from app.dialogs.uivk_dialog.getters.vacancy_faq_answer_getter import vacancy_faq_answer_getter
 from app.dialogs.uivk_dialog.getters.vacancy_faq_getter import vacancy_faq_id_getter, vacancy_faq_getter
 from app.dialogs.uivk_dialog.getters.vacancy_getter import vacancy_id_getter
-from app.dialogs.uivk_dialog.on_click_functions.vacancy_faq_on_click import on_click_vacancy_faq_selected
-from app.dialogs.uivk_dialog.on_click_functions.vacancy_on_click import on_click_vacancy_selected
 
 admin_start_panel_window = Window(
     Format(
-        text='Добро пожаловать в админ панель бота УИВК. Выберите вакансию для редактирования:',
+        text='👋 Добро пожаловать в <b>админ-панель</b> бота <b>УИВК</b>!\n\n'
+             '📂 Выберите вакансию для редактирования:',
         when=F['vacancy_data_flag']
     ),
     ScrollingGroup(
         Column(
             Select(
-                text=Format("{item.title}"),
+                text=Format("💼 {item.title}"),
                 id="adm_vacancy_selected",
                 items=VACANCY_KEY,
                 item_id_getter=vacancy_id_getter,
@@ -51,35 +53,47 @@ admin_start_panel_window = Window(
         when=F['vacancy_data_flag']
     ),
     Format(
-        text='На текущий момент вакансии отсутствуют. Нажмите Создать, чтобы добавить новую вакансию.',
+        text='⚠️ На данный момент вакансии <b>отсутствуют</b>.\n\n'
+             '➕ Нажмите <b>Создать вакансию</b>, чтобы добавить новую.',
         when=~F['vacancy_data_flag']
     ),
     SwitchTo(
-        id='to_new_vacancy', text=Format('Создать вакансию'), state=AdminPanelStatesGroup.admin_panel_vacancy_creating
+        id='to_new_vacancy',
+        text=Format('➕ Создать вакансию'),
+        state=AdminPanelStatesGroup.admin_panel_vacancy_creating
     ),
     Button(
-        id='back_to_bot', text=Format(
-            text='Назад в бота'
-        ),
+        id='back_to_bot',
+        text=Format('⬅️ Назад в бота'),
         on_click=go_to_bot_from_admin_panel
     ),
     getter=all_admin_vacancy_getter,
-    state=AdminPanelStatesGroup.admin_panel_menu
+    state=AdminPanelStatesGroup.admin_panel_menu,
+    parse_mode="HTML"
 )
 
 admin_vacancy_faq_answer_window = Window(
     Format(
-        text='Выберите интересующий вас вопрос по вакансии:',
+        text='🗂️ <b>Данные вакансии {vacancy_title}:</b>\n\n'
+             '📌 Статус: <b>{vacancy_status}</b>\n'
+             '📅 Создана: <b>{vacancy_created}</b>\n'
+             '✏️ Изменена: <b>{vacancy_updated}</b>\n\n'
+             '❓ Выберите интересующий вас вопрос по вакансии:',
         when=F['vacancy_faq_data_flag']
     ),
     Format(
-        text='FAQ на должность {vacancy_title} отсутствует, нажмите кнопку "Добавить FAQ" ниже.',
+        text='🗂️ <b>Данные вакансии {vacancy_title}:</b>\n\n'
+             '📌 Статус: <b>{vacancy_status}</b>\n'
+             '📅 Создана: <b>{vacancy_created}</b>\n'
+             '✏️ Изменена: <b>{vacancy_updated}</b>\n\n'
+             '⚠️ Для вакансии <b>{vacancy_title}</b> пока нет FAQ.\n\n'
+             '➕ Нажмите кнопку <b>Добавить FAQ</b> ниже, чтобы создать первый вопрос.',
         when=~F['vacancy_faq_data_flag']
     ),
     ScrollingGroup(
         Column(
             Select(
-                text=Format("{item.question}"),
+                text=Format("❓ {item.question}"),
                 id="faq_selected",
                 items=VACANCY_FAQ_KEY,
                 item_id_getter=vacancy_faq_id_getter,
@@ -92,137 +106,217 @@ admin_vacancy_faq_answer_window = Window(
         hide_on_single_page=True,
         when=F['vacancy_faq_data_flag']
     ),
+    Button(
+        id='change_hidden',
+        text=Format('🔄 Поменять статус'),
+        on_click=on_click_change_vacancy_hidden_status
+    ),
     SwitchTo(
         id='to_creating',
-        text=Format('Добавить FAQ'),
+        text=Format('➕ Добавить FAQ'),
         state=AdminPanelStatesGroup.admin_panel_vacancy_faq_question_creating
     ),
     SwitchTo(
         id='to_deleting',
-        text=Format('Удалить вакансию'),
+        text=Format('🗑️ Удалить вакансию'),
         state=AdminPanelStatesGroup.admin_panel_vacancy_deleting
     ),
     SwitchTo(
         id='back_to_start',
-        text=Format('Назад в меню'),
+        text=Format('⬅️ Назад в меню'),
         state=AdminPanelStatesGroup.admin_panel_menu
     ),
-    getter=vacancy_faq_getter,
+    getter=admin_current_vacancy_getter,
     state=AdminPanelStatesGroup.admin_panel_vacancy_and_questions,
+    parse_mode="HTML"
+)
+
+admin_vacancy_faq_deleting = Window(
+    Format(
+        "⚠️ Вы уверены, что хотите удалить данный FAQ?\n\n"
+        "<b>❓ Вопрос:</b>\n{question}\n\n"
+        "<b>💬 Ответ:</b>\n{answer}",
+        when=F["faq_found"]
+    ),
+    Format(
+        "😅 Ой, что-то пошло не так — FAQ не найден.",
+        when=~F["faq_found"]
+    ),
+    Button(
+        id='delete_faq',
+        text=Format('🗑️ Да, удаляем!'),
+        on_click=on_click_delete_faq
+    ),
+    SwitchTo(
+        id="to_admin_faq",
+        text=Format("⬅️ Назад"),
+        state=AdminPanelStatesGroup.admin_panel_vacancy_faq_answer
+    ),
+    SwitchTo(
+        id='back_to_start',
+        text=Format('🏠 Назад в меню'),
+        state=AdminPanelStatesGroup.admin_panel_menu
+    ),
+    getter=vacancy_faq_answer_getter,
+    state=AdminPanelStatesGroup.admin_panel_vacancy_faq_deleting,
+    parse_mode="HTML"
+)
+
+admin_vacancy_faq_answer = Window(
+    Format(
+        "<b>❓ Вопрос:</b>\n{question}\n\n"
+        "<b>💬 Ответ:</b>\n{answer}",
+        when=F["faq_found"]
+    ),
+    Format(
+        "😅 Ой, что-то пошло не так — FAQ не найден.",
+        when=~F["faq_found"]
+    ),
+    SwitchTo(
+        id='to_delete_faq',
+        text=Format('🗑️ Удалить FAQ'),
+        state=AdminPanelStatesGroup.admin_panel_vacancy_faq_deleting
+    ),
+    SwitchTo(
+        id="to_admin_faq",
+        text=Format("⬅️ Назад"),
+        state=AdminPanelStatesGroup.admin_panel_vacancy_and_questions
+    ),
+    SwitchTo(
+        id='back_to_start',
+        text=Format('🏠 Назад в меню'),
+        state=AdminPanelStatesGroup.admin_panel_menu
+    ),
+    getter=vacancy_faq_answer_getter,
+    state=AdminPanelStatesGroup.admin_panel_vacancy_faq_answer,
     parse_mode="HTML"
 )
 
 admin_vacancy_deleting_window = Window(
     Format(
-        text='Данные: создание: {vacancy_created} редактирование {vacancy_updated}\n'
-             'Вы уверенны, что хотите удалить вакансию "{vacancy_title}". Статус - {vacancy_status}?'
+        text='🗂️ <b>Данные вакансии {vacancy_title}:</b>\n\n'
+             '📌 Статус: <b>{vacancy_status}</b>\n'
+             '📅 Создана: <b>{vacancy_created}</b>\n'
+             '✏️ Изменена: <b>{vacancy_updated}</b>\n\n'
+             '⚠️ Вы уверены, что хотите удалить вакансию\n'
+             '«<b>{vacancy_title}</b>»?\n'
     ),
     Button(
-        id='delete_vac', text=Format('Удалить'), on_click=on_click_delete_vacancy
+        id='delete_vac',
+        text=Format('🗑️ Удалить вакансию'),
+        on_click=on_click_delete_vacancy
     ),
     SwitchTo(
         id='back',
-        text=Format('Назад'),
+        text=Format('⬅️ Назад'),
         state=AdminPanelStatesGroup.admin_panel_vacancy_and_questions
     ),
     SwitchTo(
         id='back_to_start',
-        text=Format('Назад в меню'),
+        text=Format('🏠 Назад в меню'),
         state=AdminPanelStatesGroup.admin_panel_menu
     ),
     getter=admin_current_vacancy_getter,
-    state=AdminPanelStatesGroup.admin_panel_vacancy_deleting
+    state=AdminPanelStatesGroup.admin_panel_vacancy_deleting,
+    parse_mode="HTML"
 )
 
 admin_vacancy_creating_window = Window(
     Format(
-        text='Введите новое название вакансии'
+        text='✍️ <b>Введите новое название вакансии:</b>'
     ),
     MessageInput(
         new_vacancy_title_input
     ),
     SwitchTo(
         id='back_to_start',
-        text=Format('Назад в меню'),
+        text=Format('🏠 Назад в меню'),
         state=AdminPanelStatesGroup.admin_panel_menu
     ),
-    state=AdminPanelStatesGroup.admin_panel_vacancy_creating
+    state=AdminPanelStatesGroup.admin_panel_vacancy_creating,
+    parse_mode="HTML"
 )
 
 admin_vacancy_faq_question_creating_window = Window(
     Format(
-        text='Введите новый вопрос:'
+        text='❓ <b>Введите новый вопрос для FAQ:</b>'
     ),
     MessageInput(
         new_faq_question_input
     ),
     SwitchTo(
         id='back_to_vacancy',
-        text=Format('Назад'),
+        text=Format('⬅️ Назад'),
         state=AdminPanelStatesGroup.admin_panel_vacancy_and_questions
     ),
     SwitchTo(
         id='back_to_start',
-        text=Format('Назад в меню'),
+        text=Format('🏠 Назад в меню'),
         state=AdminPanelStatesGroup.admin_panel_menu
     ),
-    state=AdminPanelStatesGroup.admin_panel_vacancy_faq_question_creating
+    state=AdminPanelStatesGroup.admin_panel_vacancy_faq_question_creating,
+    parse_mode="HTML"
 )
 
 admin_vacancy_faq_answer_creating_window = Window(
     Format(
-        text='Вопрос: {new_faq_question}\n\n'
-             'Введите ответ на вопрос:'
+        text='❓ <b>Вопрос:</b> {new_faq_question}\n\n'
+             '💬 <b>Введите ответ на вопрос:</b>'
     ),
     MessageInput(
         new_faq_answer_input
     ),
     SwitchTo(
         id='back_to_question',
-        text=Format('Назад'),
+        text=Format('⬅️ Назад'),
         state=AdminPanelStatesGroup.admin_panel_vacancy_faq_question_creating
     ),
     SwitchTo(
         id='back_to_start',
-        text=Format('Назад в меню'),
+        text=Format('🏠 Назад в меню'),
         state=AdminPanelStatesGroup.admin_panel_menu
     ),
     getter=new_faq_question_getter,
-    state=AdminPanelStatesGroup.admin_panel_vacancy_faq_answer_creating
+    state=AdminPanelStatesGroup.admin_panel_vacancy_faq_answer_creating,
+    parse_mode="HTML"
 )
 
 admin_vacancy_faq_accept_creating_window = Window(
     Format(
-        text='Проверьте вводимые данные: \n\n'
-             'Вакансия: {vacancy_title}\n\n'
-             'Вопрос: {new_faq_question}\n'
-             'Ответ: {new_faq_answer}'
+        text='✅ <b>Проверьте вводимые данные:</b>\n\n'
+             '💼 <b>Вакансия:</b> {vacancy_title}\n\n'
+             '❓ <b>Вопрос:</b> {new_faq_question}\n'
+             '💬 <b>Ответ:</b> {new_faq_answer}'
     ),
     MessageInput(
         new_faq_answer_input
     ),
     Button(
         id='create_faq',
-        text=Format('Создать FAQ'),
+        text=Format('➕ Создать FAQ'),
         on_click=on_click_create_new_faq
     ),
     SwitchTo(
         id='back_to_question',
-        text=Format('Назад'),
+        text=Format('⬅️ Назад'),
         state=AdminPanelStatesGroup.admin_panel_vacancy_faq_answer_creating
     ),
     SwitchTo(
         id='back_to_start',
-        text=Format('Назад в меню'),
+        text=Format('🏠 Назад в меню'),
         state=AdminPanelStatesGroup.admin_panel_menu
     ),
     getter=new_faq_answer_and_question_getter,
-    state=AdminPanelStatesGroup.admin_panel_vacancy_faq_accept_creating
+    state=AdminPanelStatesGroup.admin_panel_vacancy_faq_accept_creating,
+    parse_mode="HTML"
 )
 
 admin_panel_dialog = Dialog(
     admin_start_panel_window,
     admin_vacancy_faq_answer_window,
+
+    admin_vacancy_faq_answer,
+    admin_vacancy_faq_deleting,
 
     admin_vacancy_deleting_window,
     admin_vacancy_creating_window,

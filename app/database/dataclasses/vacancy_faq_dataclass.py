@@ -62,3 +62,12 @@ class VacancyFAQ:
         conn.close()
 
         return cls(id=row[0], vacancy_id=row[1], question=row[2], answer=row[3])
+
+    @classmethod
+    def delete_by_id(cls, faq_id: int) -> None:
+        """Удаляет FAQ по его id."""
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM faq WHERE id = ?", (faq_id,))
+        conn.commit()
+        conn.close()
