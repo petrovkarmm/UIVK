@@ -9,6 +9,7 @@ from app.database.dataclasses.vacancy_faq_dataclass import VACANCY_FAQ_KEY
 from app.dialogs.admin_panel_dialog.admin_dialog_states import AdminPanelStatesGroup
 from app.dialogs.admin_panel_dialog.getters.admin_answer_and_question_getter import new_faq_answer_and_question_getter, \
     new_faq_question_getter
+from app.dialogs.admin_panel_dialog.getters.admin_vacancy_faq_getter import admin_vacancy_faq_getter
 from app.dialogs.admin_panel_dialog.getters.admin_vacancy_getter import all_admin_vacancy_getter, \
     admin_current_vacancy_getter
 from app.dialogs.admin_panel_dialog.message_inputs.new_vacancy_answer_question_input import new_faq_answer_input
@@ -126,7 +127,7 @@ admin_vacancy_faq_answer_window = Window(
         text=Format('⬅️ Назад в меню'),
         state=AdminPanelStatesGroup.admin_panel_menu
     ),
-    getter=admin_current_vacancy_getter,
+    getter=admin_vacancy_faq_getter,
     state=AdminPanelStatesGroup.admin_panel_vacancy_and_questions,
     parse_mode="HTML"
 )
@@ -287,9 +288,6 @@ admin_vacancy_faq_accept_creating_window = Window(
              '💼 <b>Вакансия:</b> {vacancy_title}\n\n'
              '❓ <b>Вопрос:</b> {new_faq_question}\n'
              '💬 <b>Ответ:</b> {new_faq_answer}'
-    ),
-    MessageInput(
-        new_faq_answer_input
     ),
     Button(
         id='create_faq',
