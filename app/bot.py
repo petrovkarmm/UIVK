@@ -2,6 +2,7 @@ import asyncio
 
 from aiogram import Bot, Dispatcher, F
 from aiogram.enums import ParseMode
+from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.base import DefaultKeyBuilder
 from aiogram.fsm.storage.redis import RedisStorage
@@ -54,6 +55,12 @@ async def bot_start():
     async def full_restart(message: Message, state: FSMContext, dialog_manager: DialogManager):
         await message.answer(
             text='pong'
+        )
+
+    @dp.message(Command('id'))
+    async def get_user_id(message: Message, state: FSMContext, dialog_manager: DialogManager):
+        await message.answer(
+            text=f'Ваш ID: {message.from_user.id}'
         )
 
     # error handler
