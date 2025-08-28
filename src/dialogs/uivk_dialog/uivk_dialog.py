@@ -8,6 +8,7 @@ from src.database.dataclasses.vacancy_faq_dataclass import VACANCY_FAQ_KEY
 from src.dialogs.uivk_dialog.getters.vacancy_faq_answer_getter import vacancy_faq_answer_getter
 from src.dialogs.uivk_dialog.getters.vacancy_faq_getter import vacancy_faq_getter, vacancy_faq_id_getter
 from src.dialogs.uivk_dialog.getters.vacancy_getter import vacancy_id_getter, all_unhidden_vacancy_getter
+from src.dialogs.uivk_dialog.on_click_functions.to_admin_panel_on_click import on_click_go_to_admin_panel
 from src.dialogs.uivk_dialog.on_click_functions.vacancy_faq_on_click import on_click_vacancy_faq_selected
 from src.dialogs.uivk_dialog.on_click_functions.vacancy_on_click import on_click_vacancy_selected
 from src.dialogs.uivk_dialog.uivk_dialog_states import UivkDialogStatesGroup
@@ -43,6 +44,12 @@ uivk_start_window = Window(
         text=Format('🔄 Обновить'),
         on_click=None,
         when=~F['vacancy_data_flag']
+    ),
+    Button(
+        id='to_admin_panel',
+        text=Format('⚙️ Админ панель'),
+        when=F['admin_status'],
+        on_click=on_click_go_to_admin_panel
     ),
     getter=all_unhidden_vacancy_getter,
     state=UivkDialogStatesGroup.uivk_start_menu,

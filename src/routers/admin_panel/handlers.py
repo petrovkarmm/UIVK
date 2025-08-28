@@ -67,19 +67,6 @@ async def list_admins_handler(message: Message, state: FSMContext, dialog_manage
     await message.answer(response.strip(), parse_mode="HTML")
 
 
-@admin_panel.message(Command('admin'), IsAdminFilter())
-async def start_admin_panel_dialog(message: Message, state: FSMContext, dialog_manager: DialogManager,
-                                   command: CommandObject):
-    try:
-        await dialog_manager.reset_stack()
-    except Exception as e:
-        bot_logger.warning(e)
-    finally:
-        await dialog_manager.start(
-            AdminPanelStatesGroup.admin_panel_menu
-        )
-
-
 @admin_panel.message(Command("help"), IsAdminFilter())
 async def help_admin_handler(message: Message, state: FSMContext, command: CommandObject):
     help_text = (

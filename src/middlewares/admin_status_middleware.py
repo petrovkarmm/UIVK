@@ -7,6 +7,8 @@ from aiogram_dialog import DialogManager
 
 from src.database.dataclasses.admin_dataclass import Admin
 from src.dialogs.uivk_dialog.uivk_dialog_states import UivkDialogStatesGroup
+from src.settings import super_admins
+from src.utils.admin_status_checker import admin_status_checker
 
 
 class KickDeletedAdminFromAdminPanel(BaseMiddleware):
@@ -21,16 +23,12 @@ class KickDeletedAdminFromAdminPanel(BaseMiddleware):
     ) -> Any:
         user_id = event.from_user.id
 
-        super_admins = [
-            i.strip()
-            for i in os.getenv("MAIN_ADMIN_TELEGRAM_IDS", "").split(",")
-            if i.strip()
-        ]
-
         dialog_manager: DialogManager = data.get("dialog_manager")
 
+        admin_status = await admin_status_checker(user_id)
+
         # Если это супер-админ или админ в базе - продолжаем
-        if (str(user_id) in super_admins) or Admin.exists(user_id):
+        if admin_status:
             return await handler(event, data)
 
         # Если пользователь потерял права админа

@@ -1,41 +1,31 @@
-import os
-
 from dotenv import load_dotenv, find_dotenv
 
 from aiogram.filters import BaseFilter
 from aiogram.types import Message
-
-from src.database.dataclasses.admin_dataclass import Admin
-from src.settings import super_admins
-
-load_dotenv(find_dotenv())
+from src.utils.admin_status_checker import admin_status_checker, super_admin_status_checker
 
 
 class IsAdminFilter(BaseFilter):
     async def __call__(self, message: Message) -> bool:
         user_id = message.from_user.id
 
-        # Проверка супер-админа
-        if str(user_id) in super_admins:
-            return True
+        admin_status = await admin_status_checker(user_id)
 
-        # Проверка обычного админа
-        if Admin.exists(user_id):
+        if admin_status:
             return True
-
-        # Пользователь не админ — отправляем сообщение
-        await message.answer("❌ У вас нет прав администратора.")
-        return False
+        else:
+            await message.answer("❌ У вас нет прав администратора.")
+            return False
 
 
 class IsSuperAdminFilter(BaseFilter):
     async def __call__(self, message: Message) -> bool:
         user_id = message.from_user.id
 
-        # Проверка супер-админа
-        if str(user_id) in super_admins:
-            return True
+        super_admin_status = await super_admin_status_checker(user_id)
 
-        # Пользователь не админ — отправляем сообщение
-        await message.answer("❌ У вас нет прав администратора.")
-        return False
+        if super_admin_status:
+            return True
+        else:
+            await message.answer("❌ У вас нет прав супер администратора.")
+            return False
