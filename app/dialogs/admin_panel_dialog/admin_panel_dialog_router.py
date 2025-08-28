@@ -1,7 +1,10 @@
 from aiogram import Router
-
 from app.dialogs.admin_panel_dialog.admin_panel_dialog import admin_panel_dialog
+from app.middlewares.admin_status_middleware import KickDeletedAdminFromAdminPanel
 
 admin_panel_dialog_router = Router()
 
 admin_panel_dialog_router.include_router(admin_panel_dialog)
+
+admin_panel_dialog_router.message.middleware(KickDeletedAdminFromAdminPanel())
+admin_panel_dialog_router.callback_query.middleware(KickDeletedAdminFromAdminPanel())

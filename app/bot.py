@@ -1,9 +1,9 @@
+import datetime
 import asyncio
-import os
 
 from aiogram import Bot, Dispatcher, F
 from aiogram.enums import ParseMode
-from aiogram.filters import Command, CommandObject
+from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.base import DefaultKeyBuilder
 from aiogram.fsm.storage.redis import RedisStorage
@@ -11,10 +11,8 @@ from aiogram.types import ErrorEvent, Message
 from aiogram_dialog import setup_dialogs, DialogManager
 from aiogram_dialog.api.exceptions import UnknownIntent, OutdatedIntent
 
-from app.database.dataclasses.admin_dataclass import Admin
 from app.dialogs.admin_panel_dialog.admin_panel_dialog_router import admin_panel_dialog_router
 from app.dialogs.uivk_dialog.uivk_dialog_router import uivk_dialog_router
-from app.routers.admin_panel.filters import IsAdminFilter, IsSuperAdminFilter
 from app.routers.admin_panel.handlers import admin_panel
 from app.routers.start.handlers import start_router
 from app.logs.logger import bot_logger
@@ -85,10 +83,8 @@ async def bot_start():
 if __name__ == "__main__":
     try:
         bot_logger.info(
-            'Старт бота.'
+            f'Старт бота - {datetime.datetime.now()}'
         )
-        # create_tables()
-        # insert_values()
         asyncio.run(bot_start())
     except Exception as e:
         bot_logger.warning(e)

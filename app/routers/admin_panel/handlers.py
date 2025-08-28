@@ -1,6 +1,6 @@
 import os
 
-from aiogram import Router, F
+from aiogram import Router
 from aiogram.filters import Command, CommandObject
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
@@ -9,12 +9,12 @@ from aiogram_dialog import DialogManager
 from app.database.dataclasses.admin_dataclass import Admin
 from app.dialogs.admin_panel_dialog.admin_dialog_states import AdminPanelStatesGroup
 from app.logs.logger import bot_logger
-from app.routers.admin_panel.filters import IsAdminFilter, IsSuperAdminFilter
+from app.filters.admin_filters import IsAdminFilter, IsSuperAdminFilter
 
 admin_panel = Router()
 
 
-@admin_panel.message(IsSuperAdminFilter(), Command("add"))
+@admin_panel.message(Command("add"), IsSuperAdminFilter())
 async def add_new_admin(message: Message, state: FSMContext, dialog_manager: DialogManager, command: CommandObject):
     try:
         new_admin_telegram_id = int(command.args.strip())
@@ -28,7 +28,7 @@ async def add_new_admin(message: Message, state: FSMContext, dialog_manager: Dia
         await message.answer(f"⚠️ Админ с ID {new_admin_telegram_id} уже есть в базе.")
 
 
-@admin_panel.message(IsSuperAdminFilter(), Command("remove"))
+@admin_panel.message(Command("remove"), IsSuperAdminFilter())
 async def delete_admin(message: Message, state: FSMContext, dialog_manager: DialogManager, command: CommandObject):
     try:
         admin_telegram_id = int(command.args.strip())
@@ -42,8 +42,9 @@ async def delete_admin(message: Message, state: FSMContext, dialog_manager: Dial
         await message.answer(f"❌ Админ с ID {admin_telegram_id} не найден в базе.")
 
 
-@admin_panel.message(IsSuperAdminFilter(), Command("list_admins"))
-async def list_admins_handler(message: Message):
+@admin_panel.message(Command("list_admins"), IsSuperAdminFilter())
+async def list_admins_handler(message: Message, state: FSMContext, dialog_manager: DialogManager,
+                              command: CommandObject):
     # Обычные админы из базы (set, чтобы быстро убирать дубли)
     db_admins = {str(admin.telegram_id) for admin in Admin.all()}
 
@@ -66,8 +67,9 @@ async def list_admins_handler(message: Message):
     await message.answer(response.strip(), parse_mode="HTML")
 
 
-@admin_panel.message(IsAdminFilter(), Command('admin'))
-async def start_admin_panel_dialog(message: Message, state: FSMContext, dialog_manager: DialogManager):
+@admin_panel.message(Command('admin'), IsAdminFilter())
+async def start_admin_panel_dialog(message: Message, state: FSMContext, dialog_manager: DialogManager,
+                                   command: CommandObject):
     try:
         await dialog_manager.reset_stack()
     except Exception as e:
@@ -78,14 +80,18 @@ async def start_admin_panel_dialog(message: Message, state: FSMContext, dialog_m
         )
 
 
-@admin_panel.message(IsSuperAdminFilter(), Command("help"))
-async def help_admin_handler(message: Message):
+@admin_panel.message(Command("help"), IsAdminFilter())
+async def help_admin_handler(message: Message, state: FSMContext, command: CommandObject):
     help_text = (
-        "<b>Список доступных команд администратора:</b>\n\n"
-        "/add &lt;id&gt; - создание нового админа. Укажите Telegram ID.\n"
-        "/remove &lt;id&gt; - удаление админа по Telegram ID.\n"
-        "/list_admins - вывод списка всех админов.\n"
-        "/admin - переход в админ-панель.\n"
+        "<b>Команды администратора:</b>\n"
+        "▫️ <code>/admin</code> — открыть админ-панель (доступно всем администраторам)\n"
+        "▫️ <code>/id</code> — узнать свой Telegram ID (можно использовать для добавления в админы)\n\n"
+
+        "<b>Команды супер-администратора:</b>\n"
+        "▫️ <code>/add 123456789</code> — добавить администратора (укажите Telegram ID)\n"
+        "▫️ <code>/remove 123456789</code> — удалить администратора (по Telegram ID)\n"
+        "▫️ <code>/list_admins</code> — список всех администраторов\n"
     )
 
     await message.answer(help_text, parse_mode="HTML")
+
