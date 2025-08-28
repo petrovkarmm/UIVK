@@ -30,7 +30,7 @@ uivk_start_window = Window(
             ),
         ),
         width=2,
-        height=5,
+        height=3,
         id="scroll_vacancy",
         hide_on_single_page=True,
         when=F['vacancy_data_flag']

@@ -14,6 +14,7 @@ from aiogram_dialog.api.exceptions import UnknownIntent, OutdatedIntent
 from src.dialogs.admin_panel_dialog.admin_panel_dialog_router import admin_panel_dialog_router
 from src.dialogs.uivk_dialog.uivk_dialog_router import uivk_dialog_router
 from src.dialogs.uivk_dialog.uivk_dialog_states import UivkDialogStatesGroup
+from src.middlewares.logger_middleware import GlobalLogger
 from src.routers.admin_panel.handlers import admin_panel
 from src.routers.start.handlers import start_router
 from src.logs.logger import bot_logger
@@ -77,10 +78,10 @@ async def bot_start():
         )
 
     # error handler
-    # dp.errors.register(error_unknown_intent_handler)
+    dp.errors.register(error_unknown_intent_handler)
 
     # logger mw
-    # dp.callback_query.middleware.register(GlobalLogger())
+    dp.callback_query.middleware.register(GlobalLogger())
 
     setup_dialogs(dp)
     dp.include_router(admin_panel)
