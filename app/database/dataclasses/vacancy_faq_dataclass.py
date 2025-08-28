@@ -24,7 +24,7 @@ class VacancyFAQ:
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT id, vacancy_id, question, answer FROM faq WHERE vacancy_id = ?",
+            "SELECT id, vacancy_id, question, answer, created, updated FROM faq WHERE vacancy_id = ?",
             (vacancy_id,)
         )
         rows = cursor.fetchall()
@@ -38,7 +38,7 @@ class VacancyFAQ:
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT id, vacancy_id, question, answer FROM faq WHERE id = ?",
+            "SELECT id, vacancy_id, question, answer, created, updated FROM faq WHERE id = ?",
             (faq_id,)
         )
         row = cursor.fetchone()
@@ -59,7 +59,7 @@ class VacancyFAQ:
 
         new_id = cursor.lastrowid
         cursor.execute(
-            "SELECT id, vacancy_id, question, answer FROM faq WHERE id = ?",
+            "SELECT id, vacancy_id, question, answer, created, updated FROM faq WHERE id = ?",
             (new_id,)
         )
         row = cursor.fetchone()
