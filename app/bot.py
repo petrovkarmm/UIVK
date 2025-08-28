@@ -13,10 +13,11 @@ from aiogram_dialog.api.exceptions import UnknownIntent, OutdatedIntent
 from app.database.dataclasses.admin_dataclass import Admin
 from app.dialogs.admin_panel_dialog.admin_panel_dialog_router import admin_panel_dialog_router
 from app.dialogs.uivk_dialog.uivk_dialog_router import uivk_dialog_router
+from app.routers.admin_panel.filters import IsAdminFilter
 from app.routers.admin_panel.handlers import admin_panel
 from app.routers.start.handlers import start_router
 from app.logs.logger import bot_logger
-from app.settings import redis_connect_url, DEBUG, bot_test_token, bot_token
+from app.settings import redis_connect_url, DEBUG, bot_test_token, bot_token, super_admins
 
 
 async def bot_start():
@@ -64,7 +65,7 @@ async def bot_start():
             text=f'Ваш ID: {message.from_user.id}'
         )
 
-    @dp.message(Command("add"))
+    @dp.message(IsAdminFilter(), Command("add"))
     async def add_new_admin(message: Message, state: FSMContext, dialog_manager: DialogManager, command: CommandObject):
         try:
             new_admin_telegram_id = int(command.args.strip())
@@ -77,7 +78,7 @@ async def bot_start():
         else:
             await message.answer(f"⚠️ Админ с ID {new_admin_telegram_id} уже есть в базе.")
 
-    @dp.message(Command("remove"))
+    @dp.message(IsAdminFilter(), Command("remove"))
     async def delete_admin(message: Message, state: FSMContext, dialog_manager: DialogManager, command: CommandObject):
         try:
             admin_telegram_id = int(command.args.strip())
@@ -90,6 +91,27 @@ async def bot_start():
         else:
             await message.answer(f"❌ Админ с ID {admin_telegram_id} не найден в базе.")
 
+    @admin_panel.message(IsAdminFilter(), Command("list_admins"))
+    async def list_admins_handler(message: Message):
+
+        # Обычные админы из базы (set, чтобы быстро убирать дубли)
+        db_admins = {str(admin.telegram_id) for admin in Admin.all()}
+
+        # Исключаем дубли — супер-админов не дублируем в "обычных"
+        db_admins -= super_admins
+
+        def format_block(title: str, ids: set[str], emoji: str) -> str:
+            if ids:
+                return f"{emoji} <b>{title}</b>:\n" + "\n".join(f"• <code>{i}</code>" for i in sorted(ids)) + "\n\n"
+            return f"{emoji} <b>{title}</b>: (нет)\n\n"
+
+        response = (
+                "👑 <b>Список администраторов</b>\n\n"
+                + format_block("Супер-админы", super_admins, "✨")
+                + format_block("Админы", db_admins, "🛡")
+        )
+
+        await message.answer(response.strip(), parse_mode="HTML")
 
     # error handler
     # dp.errors.register(error_unknown_intent_handler)

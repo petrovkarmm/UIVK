@@ -1,19 +1,28 @@
-from aiogram.filters import BaseFilter
-from aiogram.types import Message
 import os
 
+from dotenv import load_dotenv, find_dotenv
+
+from aiogram.filters import BaseFilter
+from aiogram.types import Message
+
 from app.database.dataclasses.admin_dataclass import Admin
+from app.settings import super_admins
+
+load_dotenv(find_dotenv())
 
 
 class IsAdminFilter(BaseFilter):
     async def __call__(self, message: Message) -> bool:
         user_id = message.from_user.id
 
-        # Получаем super admin id из .env
-        main_admin_id = os.getenv("MAIN_ADMIN_TELEGRAM_ID")
-
-        if main_admin_id and str(user_id) == str(main_admin_id):
+        # Проверка супер-админа
+        if str(user_id) in super_admins:
             return True
 
-        # Проверяем, есть ли в БД
-        return Admin.exists(user_id)
+        # Проверка обычного админа
+        if Admin.exists(user_id):
+            return True
+
+        # Пользователь не админ — отправляем сообщение
+        await message.answer("❌ У вас нет прав администратора.")
+        return False
