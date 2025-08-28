@@ -5,11 +5,12 @@ from aiogram_dialog import DialogManager
 
 from app.dialogs.admin_panel_dialog.admin_dialog_states import AdminPanelStatesGroup
 from app.logs.logger import bot_logger
+from app.routers.admin_panel.filters import IsAdminFilter
 
 admin_panel = Router()
 
 
-@admin_panel.message(F.text == 'admin_test')
+@admin_panel.message(IsAdminFilter(), F.text == 'admin_test')
 async def start_admin_panel_dialog(message: Message, state: FSMContext, dialog_manager: DialogManager):
     try:
         await dialog_manager.reset_stack()
@@ -19,4 +20,3 @@ async def start_admin_panel_dialog(message: Message, state: FSMContext, dialog_m
         await dialog_manager.start(
             AdminPanelStatesGroup.admin_panel_menu
         )
-

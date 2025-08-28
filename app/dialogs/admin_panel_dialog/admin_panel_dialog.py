@@ -28,7 +28,7 @@ from app.dialogs.admin_panel_dialog.on_click_functions.admin_panel_on_click impo
 from app.dialogs.admin_panel_dialog.on_click_functions.admin_panel_vacancy_on_click import \
     on_click_vacancy_admin_panel_selected
 from app.dialogs.uivk_dialog.getters.vacancy_faq_answer_getter import vacancy_faq_answer_getter
-from app.dialogs.uivk_dialog.getters.vacancy_faq_getter import vacancy_faq_id_getter, vacancy_faq_getter
+from app.dialogs.uivk_dialog.getters.vacancy_faq_getter import vacancy_faq_id_getter
 from app.dialogs.uivk_dialog.getters.vacancy_getter import vacancy_id_getter
 
 admin_start_panel_window = Window(

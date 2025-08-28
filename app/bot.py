@@ -2,7 +2,7 @@ import asyncio
 
 from aiogram import Bot, Dispatcher, F
 from aiogram.enums import ParseMode
-from aiogram.filters import Command
+from aiogram.filters import Command, CommandObject
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.base import DefaultKeyBuilder
 from aiogram.fsm.storage.redis import RedisStorage
@@ -10,6 +10,7 @@ from aiogram.types import ErrorEvent, Message
 from aiogram_dialog import setup_dialogs, DialogManager
 from aiogram_dialog.api.exceptions import UnknownIntent, OutdatedIntent
 
+from app.database.dataclasses.admin_dataclass import Admin
 from app.dialogs.admin_panel_dialog.admin_panel_dialog_router import admin_panel_dialog_router
 from app.dialogs.uivk_dialog.uivk_dialog_router import uivk_dialog_router
 from app.routers.admin_panel.handlers import admin_panel
@@ -62,6 +63,33 @@ async def bot_start():
         await message.answer(
             text=f'Ваш ID: {message.from_user.id}'
         )
+
+    @dp.message(Command("add"))
+    async def add_new_admin(message: Message, state: FSMContext, dialog_manager: DialogManager, command: CommandObject):
+        try:
+            new_admin_telegram_id = int(command.args.strip())
+        except (ValueError, AttributeError):
+            await message.answer("Укажите корректный Telegram ID: /add <id>")
+            return
+
+        if Admin.add(new_admin_telegram_id):
+            await message.answer(f"✅ Админ с ID {new_admin_telegram_id} успешно добавлен.")
+        else:
+            await message.answer(f"⚠️ Админ с ID {new_admin_telegram_id} уже есть в базе.")
+
+    @dp.message(Command("remove"))
+    async def delete_admin(message: Message, state: FSMContext, dialog_manager: DialogManager, command: CommandObject):
+        try:
+            admin_telegram_id = int(command.args.strip())
+        except (ValueError, AttributeError):
+            await message.answer("Укажите корректный Telegram ID: /remove <id>")
+            return
+
+        if Admin.delete(admin_telegram_id):
+            await message.answer(f"🗑 Админ с ID {admin_telegram_id} удалён.")
+        else:
+            await message.answer(f"❌ Админ с ID {admin_telegram_id} не найден в базе.")
+
 
     # error handler
     # dp.errors.register(error_unknown_intent_handler)

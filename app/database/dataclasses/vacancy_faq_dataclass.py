@@ -10,6 +10,8 @@ class VacancyFAQ:
     vacancy_id: int
     question: str
     answer: str
+    created: str
+    updated: str
 
     @staticmethod
     def format_question(question: str) -> str:
@@ -27,7 +29,8 @@ class VacancyFAQ:
         )
         rows = cursor.fetchall()
         conn.close()
-        return [cls(id=row[0], vacancy_id=row[1], question=row[2], answer=row[3]) for row in rows]
+        return [cls(id=row[0], vacancy_id=row[1], question=row[2], answer=row[3], created=row[4], updated=row[5]) for
+                row in rows]
 
     @classmethod
     def get_by_id(cls, faq_id: int) -> "VacancyFAQ | None":
@@ -40,7 +43,8 @@ class VacancyFAQ:
         )
         row = cursor.fetchone()
         conn.close()
-        return cls(id=row[0], vacancy_id=row[1], question=row[2], answer=row[3]) if row else None
+        return cls(id=row[0], vacancy_id=row[1], question=row[2], answer=row[3], created=row[4],
+                   updated=row[5]) if row else None
 
     @classmethod
     def create_new(cls, vacancy_id: int, question: str, answer: str) -> "VacancyFAQ":
@@ -61,7 +65,7 @@ class VacancyFAQ:
         row = cursor.fetchone()
         conn.close()
 
-        return cls(id=row[0], vacancy_id=row[1], question=row[2], answer=row[3])
+        return cls(id=row[0], vacancy_id=row[1], question=row[2], answer=row[3], created=row[4], updated=row[5])
 
     @classmethod
     def delete_by_id(cls, faq_id: int) -> None:

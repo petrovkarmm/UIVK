@@ -16,6 +16,16 @@ def create_tables():
     )
     """)
 
+    # Админы
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS admin (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        telegram_id INTEGER NOT NULL,
+        created DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
+
     # Вопросы и ответы, связанные с вакансией
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS faq (
