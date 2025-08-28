@@ -2,7 +2,6 @@ from aiogram_dialog import DialogManager
 
 from app.database.dataclasses.vacancy_dataclass import Vacancy
 from app.database.dataclasses.vacancy_faq_dataclass import VACANCY_FAQ_KEY, VacancyFAQ
-from test_data import test_vacancy_data
 
 
 async def vacancy_faq_getter(dialog_manager: DialogManager, **_kwargs):
@@ -31,11 +30,3 @@ async def vacancy_faq_getter(dialog_manager: DialogManager, **_kwargs):
 
 def vacancy_faq_id_getter(vacancy_faq: VacancyFAQ) -> int:
     return vacancy_faq.id
-
-
-def current_vacancy_getter(vacancy_id: int):
-    for vacancy in test_vacancy_data:
-        if vacancy_id == vacancy['id']:
-            return vacancy['faq']
-
-    return []  # <= добавь это!

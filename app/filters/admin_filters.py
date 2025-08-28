@@ -6,6 +6,7 @@ from aiogram.filters import BaseFilter
 from aiogram.types import Message
 
 from app.database.dataclasses.admin_dataclass import Admin
+from app.settings import super_admins
 
 load_dotenv(find_dotenv())
 
@@ -13,8 +14,6 @@ load_dotenv(find_dotenv())
 class IsAdminFilter(BaseFilter):
     async def __call__(self, message: Message) -> bool:
         user_id = message.from_user.id
-
-        super_admins = [i.strip() for i in os.getenv("MAIN_ADMIN_TELEGRAM_IDS", "").split(",") if i.strip()]
 
         # Проверка супер-админа
         if str(user_id) in super_admins:
@@ -31,10 +30,7 @@ class IsAdminFilter(BaseFilter):
 
 class IsSuperAdminFilter(BaseFilter):
     async def __call__(self, message: Message) -> bool:
-
         user_id = message.from_user.id
-
-        super_admins = {i.strip() for i in os.getenv("MAIN_ADMIN_TELEGRAM_IDS", "").split(",") if i.strip()}
 
         # Проверка супер-админа
         if str(user_id) in super_admins:

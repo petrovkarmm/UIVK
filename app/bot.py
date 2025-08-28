@@ -13,6 +13,7 @@ from aiogram_dialog.api.exceptions import UnknownIntent, OutdatedIntent
 
 from app.dialogs.admin_panel_dialog.admin_panel_dialog_router import admin_panel_dialog_router
 from app.dialogs.uivk_dialog.uivk_dialog_router import uivk_dialog_router
+from app.dialogs.uivk_dialog.uivk_dialog_states import UivkDialogStatesGroup
 from app.routers.admin_panel.handlers import admin_panel
 from app.routers.start.handlers import start_router
 from app.logs.logger import bot_logger
@@ -30,27 +31,38 @@ async def bot_start():
         dp = Dispatcher(storage=storage)
         bot = Bot(token=bot_token)
 
-    async def error_unknown_intent_handler(
-            event: ErrorEvent, dialog_manager: DialogManager
-    ):
-        if isinstance(event.exception, UnknownIntent) or isinstance(event.exception, OutdatedIntent):
+    async def error_unknown_intent_handler(event: ErrorEvent, dialog_manager: DialogManager):
+        """Обработка ошибок UnknownIntent / OutdatedIntent"""
+
+        exception = event.exception
+
+        # Логируем все прочие ошибки
+        if not isinstance(exception, (UnknownIntent, OutdatedIntent)):
+            bot_logger.warning(f"Необработанная ошибка: {exception}")
+        else:
+            # Пытаемся удалить сообщение с "битой" callback-кнопкой
             try:
-                event_message_id = event.update.callback_query.message.message_id
-                event_chat_id = event.update.callback_query.message.chat.id
+                query = event.update.callback_query
                 await bot.delete_message(
-                    chat_id=event_chat_id, message_id=event_message_id
+                    chat_id=query.message.chat.id,
+                    message_id=query.message.message_id,
                 )
                 await bot.send_message(
-                    text='⚠️ Упс! Кажется, что-то пошло не так.',
-                    chat_id=event_chat_id,
-                    parse_mode=ParseMode.HTML
+                    chat_id=query.message.chat.id,
+                    text="⚠️ Упс! Кажется, что-то пошло не так.",
+                    parse_mode=ParseMode.HTML,
                 )
-            except AttributeError as exception:
-                bot_logger.warning(f'Отбилась в закрытый диалог.', exception)
+            except AttributeError:
+                bot_logger.warning("Ошибка: callback пришёл в закрытый диалог")
             except Exception as exception:
-                bot_logger.warning(exception)
-        else:
-            bot_logger.warning(f"{event.exception}")
+                bot_logger.warning(f"Ошибка при удалении/отправке сообщения: {exception}")
+
+        # Восстанавливаем пользователя в дефолтное меню
+        try:
+            await dialog_manager.reset_stack()
+            await dialog_manager.start(UivkDialogStatesGroup.uivk_start_menu)
+        except Exception as exception:
+            bot_logger.warning(f"Ошибка при восстановлении стека диалога: {exception}")
 
     @dp.message(F.text == 'ping')
     async def full_restart(message: Message, state: FSMContext, dialog_manager: DialogManager):
