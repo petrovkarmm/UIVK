@@ -66,7 +66,7 @@ async def list_admins_handler(message: Message):
     await message.answer(response.strip(), parse_mode="HTML")
 
 
-@admin_panel.message(IsAdminFilter(), F.command == 'admin')
+@admin_panel.message(IsAdminFilter(), Command('admin'))
 async def start_admin_panel_dialog(message: Message, state: FSMContext, dialog_manager: DialogManager):
     try:
         await dialog_manager.reset_stack()
@@ -76,3 +76,16 @@ async def start_admin_panel_dialog(message: Message, state: FSMContext, dialog_m
         await dialog_manager.start(
             AdminPanelStatesGroup.admin_panel_menu
         )
+
+
+@admin_panel.message(IsSuperAdminFilter(), Command("help"))
+async def help_admin_handler(message: Message):
+    help_text = (
+        "<b>Список доступных команд администратора:</b>\n\n"
+        "/add &lt;id&gt; - создание нового админа. Укажите Telegram ID.\n"
+        "/remove &lt;id&gt; - удаление админа по Telegram ID.\n"
+        "/list_admins - вывод списка всех админов.\n"
+        "/admin - переход в админ-панель.\n"
+    )
+
+    await message.answer(help_text, parse_mode="HTML")
