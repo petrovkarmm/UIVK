@@ -15,8 +15,8 @@ from src.dialogs.admin_panel_dialog.admin_panel_dialog_router import admin_panel
 from src.dialogs.uivk_dialog.uivk_dialog_router import uivk_dialog_router
 from src.dialogs.uivk_dialog.uivk_dialog_states import UivkDialogStatesGroup
 from src.middlewares.logger_middleware import GlobalLogger
-from src.routers.admin_panel.handlers import admin_panel
-from src.routers.start.handlers import start_router
+from src.routers.admin.handlers import admin_panel
+from src.routers.user.handlers import start_router
 from src.logs.logger import bot_logger
 from src.settings import redis_connect_url, DEBUG, bot_test_token, bot_token
 

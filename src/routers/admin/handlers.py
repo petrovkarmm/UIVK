@@ -1,6 +1,6 @@
 import os
 
-from aiogram import Router
+from aiogram import Router, F
 from aiogram.filters import Command, CommandObject
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
@@ -8,6 +8,7 @@ from aiogram_dialog import DialogManager
 
 from src.database.dataclasses.admin import Admin
 from src.database.dataclasses.chat_group import ChatGroup
+from src.database.dataclasses.topic import Topic
 from src.dialogs.admin_panel_dialog.admin_dialog_states import AdminPanelStatesGroup
 from src.logs.logger import bot_logger
 from src.filters.admin_filters import IsAdminFilter, IsSuperAdminFilter
@@ -29,32 +30,29 @@ async def add_new_admin(message: Message, state: FSMContext, dialog_manager: Dia
         await message.answer(f"⚠️ Админ с ID {new_admin_telegram_id} уже есть в базе.")
 
 
-@admin_panel.message(Command("get_topic_id"))
+@admin_panel.message(Command("get_topic_id"), IsSuperAdminFilter())
 async def get_topic_id(message: Message):
-    # проверяем, что сообщение в топике форума
     thread_id = getattr(message, "message_thread_id", None)
 
-    if not thread_id:
-        await message.answer("⚠️ Это не топик форума. Отправьте команду внутри топика GENERAL.")
-        return
-
-    await message.answer(f"ℹ️ ID этого топика: {thread_id}")
+    if thread_id is None:
+        await message.answer("ℹ️ Это GENERAL-топик (ID хранится как None).")
+    else:
+        await message.answer(f"ℹ️ ID этого топика: {thread_id}")
 
 
 @admin_panel.message(Command("set_group"), IsSuperAdminFilter())
 async def set_group(message: Message, state: FSMContext, dialog_manager: DialogManager, command: CommandObject):
     try:
-        args = command.args.strip().split()
-        group_id = int(args[0])
-        general_topic_id = int(args[1])
-    except (ValueError, AttributeError, IndexError):
-        await message.answer("❌ Использование: /set_group <group_id> <general_topic_id>")
+        group_id = int(command.args.strip())
+    except (ValueError, AttributeError):
+        await message.answer("❌ Использование: /set_group <group_id>")
         return
 
-    cg = ChatGroup.create(group_id=group_id, general_topic_id=general_topic_id)
-    await message.answer(f"✅ Группа установлена:\n"
-                         f"- Group ID: {cg.group_id}\n"
-                         f"- General topic ID: {cg.general_topic_id}")
+    cg = ChatGroup.create(group_id=group_id)
+    await message.answer(
+        f"✅ Группа установлена:\n"
+        f"- Group ID: {cg.group_id}"
+    )
 
 
 @admin_panel.message(Command("get_group"), IsSuperAdminFilter())
@@ -65,35 +63,26 @@ async def get_group(message: Message, state: FSMContext, dialog_manager: DialogM
         return
 
     await message.answer(f"ℹ️ Текущие настройки группы:\n"
-                         f"- Group ID: {cg.group_id}\n"
-                         f"- General topic ID: {cg.general_topic_id}")
+                         f"- Group ID: {cg.group_id}")
 
 
 @admin_panel.message(Command("update_group"), IsSuperAdminFilter())
 async def update_group(message: Message, state: FSMContext, dialog_manager: DialogManager, command: CommandObject):
     if not command.args:
-        await message.answer("❌ Использование: /update_group <group_id?> <general_topic_id?>")
+        await message.answer("❌ Использование: /update_group <group_id>")
         return
 
-    args = command.args.strip().split()
-    group_id = None
-    general_topic_id = None
+    try:
+        group_id = int(command.args.strip())
+    except ValueError:
+        await message.answer("❌ Укажите корректный group_id (число).")
+        return
 
-    if len(args) >= 1:
-        try:
-            group_id = int(args[0])
-        except ValueError:
-            pass
-    if len(args) >= 2:
-        try:
-            general_topic_id = int(args[1])
-        except ValueError:
-            pass
-
-    cg = ChatGroup.update(group_id=group_id, general_topic_id=general_topic_id)
-    await message.answer(f"♻️ Настройки обновлены:\n"
-                         f"- Group ID: {cg.group_id}\n"
-                         f"- General topic ID: {cg.general_topic_id}")
+    cg = ChatGroup.update(group_id=group_id)
+    await message.answer(
+        f"♻️ Настройки обновлены:\n"
+        f"- Group ID: {cg.group_id}"
+    )
 
 
 @admin_panel.message(Command("remove"), IsSuperAdminFilter())
@@ -135,16 +124,33 @@ async def list_admins_handler(message: Message, state: FSMContext, dialog_manage
     await message.answer(response.strip(), parse_mode="HTML")
 
 
-@admin_panel.message(Command("help"), IsAdminFilter())
-async def help_admin_handler(message: Message, state: FSMContext, command: CommandObject):
-    help_text = (
-        "<b>Команды супер-администратора:</b>\n"
-        "▫️ <code>/add 123456789</code> — добавить администратора (укажите Telegram ID)\n"
-        "▫️ <code>/remove 123456789</code> — удалить администратора (по Telegram ID)\n"
-        "▫️ <code>/list_admins</code> — список всех администраторов\n\n"
-        "<b>Общие команды:</b>\n"
-        "▫️ <code>/id</code> — узнать ID пользователя.\n"
-        "️ <code>/id_group</code> — узнать ID группы в которой находится бот.\n"
-    )
+@admin_panel.message(
+    IsAdminFilter(),
+    F.chat.type.in_({"group", "supergroup"}),
+    F.text
+)
+async def admin_message_handler(message: Message):
+    if message.from_user.is_bot:
+        return
 
-    await message.answer(help_text, parse_mode="HTML")
+    thread_id = getattr(message, "message_thread_id", None)
+
+    # если это General — скипаем
+    if thread_id is None:
+        return
+
+    # находим топик в базе
+    topic = Topic.get_by_topic_id(thread_id)
+    if not topic:
+        await message.answer("⚠️ Не найден пользователь для этого топика.")
+        return
+
+    # отправляем сообщение пользователю
+    try:
+        await message.bot.send_message(
+            chat_id=topic.user_id,
+            text=message.text
+        )
+        await message.answer("✨ Сообщение успешно отправлено!")
+    except Exception as e:
+        await message.answer(f"❌ Ошибка при отправке пользователю: {e}")

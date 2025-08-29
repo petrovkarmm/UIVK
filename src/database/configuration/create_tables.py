@@ -41,8 +41,7 @@ def create_tables():
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS chat_group (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        group_id INTEGER NOT NULL,
-        general_topic_id INTEGER NOT NULL
+        group_id INTEGER NOT NULL
     )
     """)
 

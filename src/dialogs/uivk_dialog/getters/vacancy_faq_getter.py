@@ -5,7 +5,7 @@ from src.database.dataclasses.vacancy_faq import VACANCY_FAQ_KEY, VacancyFAQ
 
 
 async def vacancy_faq_getter(dialog_manager: DialogManager, **_kwargs):
-    vacancy_id = int(dialog_manager.dialog_data['vacancy_id'])
+    vacancy_id = dialog_manager.dialog_data['vacancy_id']
 
 
     faqs = VacancyFAQ.get_by_vacancy_id(vacancy_id=vacancy_id)

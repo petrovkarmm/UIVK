@@ -11,6 +11,7 @@ from aiogram_dialog import (
 
 from src.database.dataclasses.chat_group import ChatGroup
 from src.database.dataclasses.topic import Topic
+from src.database.dataclasses.vacancy import Vacancy
 from src.logs.logger import bot_logger
 
 exception_message = "❗ Не удалось доставить сообщение администраторам. Пожалуйста, сообщите об ошибке сотруднику через HH."
@@ -21,6 +22,8 @@ async def user_question_input(
         _message_input,
         dialog_manager: DialogManager,
 ):
+    vacancy_id = dialog_manager.dialog_data['vacancy_id']
+    vacancy_data = Vacancy.get_by_id(vacancy_id=vacancy_id)
     user_question = (message.text or "").strip()
     if not user_question:
         await message.answer('🤔 Похоже, вы отправили что-то не то...')
@@ -49,7 +52,7 @@ async def user_question_input(
         await bot.send_message(
             chat_id=cg.group_id,
             message_thread_id=topic.topic_id,
-            text=f"📨 Сообщение от {message.from_user.full_name} ({user_id}):\n\n{user_question}"
+            text=f"📨 Сообщение от {message.from_user.full_name} ({user_id}) по вакансии {vacancy_data.title}:\n\n{user_question}"
         )
 
     except TelegramBadRequest as e:
@@ -63,7 +66,7 @@ async def user_question_input(
                 await bot.send_message(
                     chat_id=cg.group_id,
                     message_thread_id=forum_topic.message_thread_id,
-                    text=f"📨 Сообщение от {message.from_user.full_name} ({user_id}):\n\n{user_question}"
+                    text=f"📨 Сообщение от {message.from_user.full_name} ({user_id}) по вакансии {vacancy_data.title}:\n\n{user_question}"
                 )
             except Exception as exception:
                 bot_logger.warning(
@@ -82,4 +85,4 @@ async def user_question_input(
         return
 
     # подтверждение пользователю
-    await message.answer("✅ Ваше сообщение отправлено администраторам. Они ответят вам в ближайшее время.")
+    await message.answer("✅ Ваше сообщение отправлено мененджерам. Они ответят вам в ближайшее время.")

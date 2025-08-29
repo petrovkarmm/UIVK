@@ -106,8 +106,13 @@ uivk_vacancy_faq_window = Window(
 
 uivk_dialog_with_admins_window = Window(
     Format(
-        text='Очень жаль, что ты не смог найти нужного вопроса. :(.\n'
-             'Данное окно позволяет написать нашим HR менеджерам, напиши интересующий тебя вопрос и мы ответим тебе как только сможем.'
+        text=(
+            "<b>Очень жаль!</b> 😔\n\n"
+            "Мы не смогли найти подходящий вопрос.\n\n"
+            "Это окно позволяет напрямую написать нашим <b>HR-менеджерам</b>. "
+            "Напиши свой вопрос, и мы ответим тебе как можно скорее. 💌"
+        )
+
     ),
     MessageInput(
         user_question_input
@@ -122,7 +127,8 @@ uivk_dialog_with_admins_window = Window(
         text=Format('🏠 В меню вакансий'),
         state=UivkDialogStatesGroup.uivk_start_menu
     ),
-    state=UivkDialogStatesGroup.uivk_dialog_with_admins
+    state=UivkDialogStatesGroup.uivk_dialog_with_admins,
+    parse_mode='HTML'
 )
 
 uivk_vacancy_faq_answer_window = Window(
