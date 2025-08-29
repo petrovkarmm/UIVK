@@ -1,7 +1,7 @@
 from aiogram_dialog import DialogManager
 
-from src.database.dataclasses.vacancy_dataclass import Vacancy
-from src.database.dataclasses.vacancy_faq_dataclass import VACANCY_FAQ_KEY, VacancyFAQ
+from src.database.dataclasses.vacancy import Vacancy
+from src.database.dataclasses.vacancy_faq import VACANCY_FAQ_KEY, VacancyFAQ
 
 
 async def vacancy_faq_getter(dialog_manager: DialogManager, **_kwargs):

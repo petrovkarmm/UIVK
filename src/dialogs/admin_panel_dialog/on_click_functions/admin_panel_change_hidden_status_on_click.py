@@ -3,7 +3,7 @@ from typing import Any
 from aiogram.types import CallbackQuery
 from aiogram_dialog import DialogManager
 
-from src.database.dataclasses.vacancy_dataclass import Vacancy
+from src.database.dataclasses.vacancy import Vacancy
 
 
 async def on_click_change_vacancy_hidden_status(

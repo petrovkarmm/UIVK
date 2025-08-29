@@ -1,7 +1,6 @@
 from dataclasses import dataclass
-from typing import Optional, List
+from typing import List
 from src.database.configuration.connection import get_connection
-from src.utils.admin_status_checker import super_admin_status_checker
 
 
 @dataclass
@@ -17,9 +16,8 @@ class Admin:
 
         # Проверим, существует ли уже такой админ
 
-        super_admin_status = super_admin_status_checker(telegram_id)
         cursor.execute("SELECT id FROM admin WHERE telegram_id = ?", (telegram_id,))
-        if cursor.fetchone() or super_admin_status:
+        if cursor.fetchone():
             conn.close()
             return False  # уже существует
 

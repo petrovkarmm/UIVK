@@ -1,4 +1,4 @@
-from src.database.dataclasses.admin_dataclass import Admin
+from src.database.dataclasses.admin import Admin
 from src.settings import super_admins
 
 

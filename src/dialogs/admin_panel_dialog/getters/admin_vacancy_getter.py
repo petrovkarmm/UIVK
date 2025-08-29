@@ -1,6 +1,6 @@
 from aiogram_dialog import DialogManager
 
-from src.database.dataclasses.vacancy_dataclass import Vacancy, VACANCY_KEY
+from src.database.dataclasses.vacancy import Vacancy, VACANCY_KEY
 
 
 async def all_admin_vacancy_getter(dialog_manager: DialogManager, **_kwargs):

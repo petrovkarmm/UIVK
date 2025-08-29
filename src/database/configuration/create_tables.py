@@ -26,6 +26,26 @@ def create_tables():
     )
     """)
 
+    # Таблица топиков (user_id ↔ topic_id)
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS topic (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL UNIQUE,
+        topic_id INTEGER NOT NULL UNIQUE,
+        created DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
+
+    # Таблица группы (одна запись!)
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS chat_group (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        group_id INTEGER NOT NULL,
+        general_topic_id INTEGER NOT NULL
+    )
+    """)
+
     # Вопросы и ответы, связанные с вакансией
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS faq (

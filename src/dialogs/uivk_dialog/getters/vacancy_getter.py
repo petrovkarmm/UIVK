@@ -2,7 +2,7 @@ from pprint import pprint
 
 from aiogram_dialog import DialogManager
 
-from src.database.dataclasses.vacancy_dataclass import Vacancy, VACANCY_KEY
+from src.database.dataclasses.vacancy import Vacancy, VACANCY_KEY
 from src.utils.admin_status_checker import admin_status_checker
 
 

@@ -1,6 +1,6 @@
 from aiogram_dialog import DialogManager
 
-from src.database.dataclasses.vacancy_dataclass import Vacancy
+from src.database.dataclasses.vacancy import Vacancy
 
 
 async def new_faq_answer_and_question_getter(dialog_manager: DialogManager, **_kwargs):

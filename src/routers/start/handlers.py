@@ -9,14 +9,15 @@ from aiogram import Router, F
 start_router = Router()
 
 
-@start_router.message(Command('start'))
+@start_router.message(Command('start'), F.chat.type == "private")
 async def start_dialog_command(message: Message, state: FSMContext, dialog_manager: DialogManager):
+
     await dialog_manager.start(
         UivkDialogStatesGroup.uivk_start_menu
     )
 
 
-@start_router.message(F.text)
+@start_router.message(F.text, F.chat.type == "private")
 async def start_dialog_text(message: Message, state: FSMContext, dialog_manager: DialogManager):
     await dialog_manager.start(
         UivkDialogStatesGroup.uivk_start_menu

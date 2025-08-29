@@ -1,4 +1,4 @@
-from src.database.dataclasses.vacancy_dataclass import Vacancy
+from src.database.dataclasses.vacancy import Vacancy
 from aiogram.types import ContentType, Message
 from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog import (

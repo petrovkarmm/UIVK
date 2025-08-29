@@ -5,7 +5,7 @@ from aiogram import BaseMiddleware
 from aiogram.types import Message, CallbackQuery
 from aiogram_dialog import DialogManager
 
-from src.database.dataclasses.admin_dataclass import Admin
+from src.database.dataclasses.admin import Admin
 from src.dialogs.uivk_dialog.uivk_dialog_states import UivkDialogStatesGroup
 from src.settings import super_admins
 from src.utils.admin_status_checker import admin_status_checker

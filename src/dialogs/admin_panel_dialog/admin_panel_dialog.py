@@ -4,8 +4,8 @@ from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.kbd import ScrollingGroup, Column, Select, Button, SwitchTo
 from aiogram_dialog.widgets.text import Format
 
-from src.database.dataclasses.vacancy_dataclass import VACANCY_KEY
-from src.database.dataclasses.vacancy_faq_dataclass import VACANCY_FAQ_KEY
+from src.database.dataclasses.vacancy import VACANCY_KEY
+from src.database.dataclasses.vacancy_faq import VACANCY_FAQ_KEY
 from src.dialogs.admin_panel_dialog.admin_dialog_states import AdminPanelStatesGroup
 from src.dialogs.admin_panel_dialog.getters.admin_answer_and_question_getter import new_faq_answer_and_question_getter, \
     new_faq_question_getter

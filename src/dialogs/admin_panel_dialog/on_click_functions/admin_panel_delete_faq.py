@@ -3,7 +3,7 @@ from typing import Any
 from aiogram.types import CallbackQuery
 from aiogram_dialog import DialogManager
 
-from src.database.dataclasses.vacancy_faq_dataclass import VacancyFAQ
+from src.database.dataclasses.vacancy_faq import VacancyFAQ
 from src.dialogs.admin_panel_dialog.admin_dialog_states import AdminPanelStatesGroup
 
 

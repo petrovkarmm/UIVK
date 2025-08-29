@@ -1,13 +1,15 @@
 from aiogram import F
 from aiogram_dialog import Dialog, Window
+from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.kbd import ScrollingGroup, Column, Select, Button, SwitchTo, Row
 from aiogram_dialog.widgets.text import Format
 
-from src.database.dataclasses.vacancy_dataclass import VACANCY_KEY
-from src.database.dataclasses.vacancy_faq_dataclass import VACANCY_FAQ_KEY
+from src.database.dataclasses.vacancy import VACANCY_KEY
+from src.database.dataclasses.vacancy_faq import VACANCY_FAQ_KEY
 from src.dialogs.uivk_dialog.getters.vacancy_faq_answer_getter import vacancy_faq_answer_getter
 from src.dialogs.uivk_dialog.getters.vacancy_faq_getter import vacancy_faq_getter, vacancy_faq_id_getter
 from src.dialogs.uivk_dialog.getters.vacancy_getter import vacancy_id_getter, all_unhidden_vacancy_getter
+from src.dialogs.uivk_dialog.message_inputs.message_from_user_to_admins_input import user_question_input
 from src.dialogs.uivk_dialog.on_click_functions.to_admin_panel_on_click import on_click_go_to_admin_panel
 from src.dialogs.uivk_dialog.on_click_functions.vacancy_faq_on_click import on_click_vacancy_faq_selected
 from src.dialogs.uivk_dialog.on_click_functions.vacancy_on_click import on_click_vacancy_selected
@@ -56,7 +58,6 @@ uivk_start_window = Window(
     parse_mode="HTML"
 )
 
-
 uivk_vacancy_faq_window = Window(
     Format(
         text='❓ Выберите интересующий вас вопрос по вакансии <b>{vacancy_title}</b>:',
@@ -89,6 +90,11 @@ uivk_vacancy_faq_window = Window(
         when=~F['vacancy_faq_data_flag']
     ),
     SwitchTo(
+        id='no_faq',
+        text=Format('Вопрос отсутствует 😢'),
+        state=UivkDialogStatesGroup.uivk_dialog_with_admins
+    ),
+    SwitchTo(
         id='to_vacancy',
         text=Format('⬅️ Назад'),
         state=UivkDialogStatesGroup.uivk_start_menu
@@ -98,6 +104,26 @@ uivk_vacancy_faq_window = Window(
     parse_mode="HTML"
 )
 
+uivk_dialog_with_admins_window = Window(
+    Format(
+        text='Очень жаль, что ты не смог найти нужного вопроса. :(.\n'
+             'Данное окно позволяет написать нашим HR менеджерам, напиши интересующий тебя вопрос и мы ответим тебе как только сможем.'
+    ),
+    MessageInput(
+        user_question_input
+    ),
+    SwitchTo(
+        id='back_to_faq',
+        text=Format('⬅️ Назад'),
+        state=UivkDialogStatesGroup.uivk_vacancy_and_questions
+    ),
+    SwitchTo(
+        id="to_vacancy",
+        text=Format('🏠 В меню вакансий'),
+        state=UivkDialogStatesGroup.uivk_start_menu
+    ),
+    state=UivkDialogStatesGroup.uivk_dialog_with_admins
+)
 
 uivk_vacancy_faq_answer_window = Window(
     Format(
@@ -124,9 +150,9 @@ uivk_vacancy_faq_answer_window = Window(
     parse_mode="HTML"
 )
 
-
 uivk_dialog = Dialog(
     uivk_start_window,
     uivk_vacancy_faq_window,
-    uivk_vacancy_faq_answer_window
+    uivk_vacancy_faq_answer_window,
+    uivk_dialog_with_admins_window
 )

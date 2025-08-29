@@ -77,14 +77,14 @@ async def bot_start():
             text=f'Ваш ID: {message.from_user.id}'
         )
 
-    @dp.message(Command('group_id'))
+    @dp.message(Command('id_group'))
     async def get_chat_id_user(message: Message):
         await message.answer(
             text=f'ID группы: {message.chat.id}'
         )
 
     # error handler
-    dp.errors.register(error_unknown_intent_handler)
+    # dp.errors.register(error_unknown_intent_handler)
 
     # logger mw
     dp.callback_query.middleware.register(GlobalLogger())
