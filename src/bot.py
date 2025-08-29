@@ -72,9 +72,15 @@ async def bot_start():
         )
 
     @dp.message(Command('id'))
-    async def get_user_id(message: Message, state: FSMContext, dialog_manager: DialogManager):
+    async def get_user_id(message: Message):
         await message.answer(
             text=f'Ваш ID: {message.from_user.id}'
+        )
+
+    @dp.message(Command('group_id'))
+    async def get_chat_id_user(message: Message):
+        await message.answer(
+            text=f'ID группы: {message.chat.id}'
         )
 
     # error handler

@@ -11,7 +11,7 @@ async def all_unhidden_vacancy_getter(dialog_manager: DialogManager, **_kwargs):
     vacancy_data_flag = bool(vacancies)
 
     user = dialog_manager.middleware_data.get('event_from_user').id
-    admin_status = await admin_status_checker(user)
+    admin_status = admin_status_checker(user)
 
     for vacancy in vacancies:
         vacancy.title = Vacancy.format_title(vacancy.title)

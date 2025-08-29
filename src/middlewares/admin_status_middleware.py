@@ -25,7 +25,7 @@ class KickDeletedAdminFromAdminPanel(BaseMiddleware):
 
         dialog_manager: DialogManager = data.get("dialog_manager")
 
-        admin_status = await admin_status_checker(user_id)
+        admin_status = admin_status_checker(user_id)
 
         # Если это супер-админ или админ в базе - продолжаем
         if admin_status:

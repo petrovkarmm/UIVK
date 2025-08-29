@@ -9,7 +9,7 @@ class IsAdminFilter(BaseFilter):
     async def __call__(self, message: Message) -> bool:
         user_id = message.from_user.id
 
-        admin_status = await admin_status_checker(user_id)
+        admin_status = admin_status_checker(user_id)
 
         if admin_status:
             return True
@@ -22,7 +22,7 @@ class IsSuperAdminFilter(BaseFilter):
     async def __call__(self, message: Message) -> bool:
         user_id = message.from_user.id
 
-        super_admin_status = await super_admin_status_checker(user_id)
+        super_admin_status = super_admin_status_checker(user_id)
 
         if super_admin_status:
             return True
