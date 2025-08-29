@@ -30,16 +30,6 @@ async def add_new_admin(message: Message, state: FSMContext, dialog_manager: Dia
         await message.answer(f"⚠️ Админ с ID {new_admin_telegram_id} уже есть в базе.")
 
 
-@admin_panel.message(Command("get_topic_id"), IsSuperAdminFilter())
-async def get_topic_id(message: Message):
-    thread_id = getattr(message, "message_thread_id", None)
-
-    if thread_id is None:
-        await message.answer("ℹ️ Это GENERAL-топик (ID хранится как None).")
-    else:
-        await message.answer(f"ℹ️ ID этого топика: {thread_id}")
-
-
 @admin_panel.message(Command("set_group"), IsSuperAdminFilter())
 async def set_group(message: Message, state: FSMContext, dialog_manager: DialogManager, command: CommandObject):
     try:
@@ -66,25 +56,6 @@ async def get_group(message: Message, state: FSMContext, dialog_manager: DialogM
                          f"- Group ID: {cg.group_id}")
 
 
-@admin_panel.message(Command("update_group"), IsSuperAdminFilter())
-async def update_group(message: Message, state: FSMContext, dialog_manager: DialogManager, command: CommandObject):
-    if not command.args:
-        await message.answer("❌ Использование: /update_group <group_id>")
-        return
-
-    try:
-        group_id = int(command.args.strip())
-    except ValueError:
-        await message.answer("❌ Укажите корректный group_id (число).")
-        return
-
-    cg = ChatGroup.update(group_id=group_id)
-    await message.answer(
-        f"♻️ Настройки обновлены:\n"
-        f"- Group ID: {cg.group_id}"
-    )
-
-
 @admin_panel.message(Command("remove"), IsSuperAdminFilter())
 async def delete_admin(message: Message, state: FSMContext, dialog_manager: DialogManager, command: CommandObject):
     try:
@@ -99,7 +70,22 @@ async def delete_admin(message: Message, state: FSMContext, dialog_manager: Dial
         await message.answer(f"❌ Админ с ID {admin_telegram_id} не найден в базе.")
 
 
-@admin_panel.message(Command("list_admins"), IsSuperAdminFilter())
+@admin_panel.message(Command("help"), IsAdminFilter())
+async def admin_help_commands_handler(message: Message):
+    await message.answer(
+        text=f'Общие команды:\n'
+             f'/id - получение ID пользователя (может использовать любой)\n'
+             f'/list_admins - получение списка администраторов\n\n'
+             f'Команды супер-администратора\n'
+             f'/add telegram_id - добавление администратора\n'
+             f'/remove telegram_id - удаление администратора\n'
+             f'/get_group - получение ID группы администраторов (где происходит переписка с пользователями)\n'
+             f'/set_group group_id - выставление новой группы\n\n'
+             f'Переписку с пользователями в топиках могут производить только администраторы.'
+    )
+
+
+@admin_panel.message(Command("list_admins"), IsAdminFilter())
 async def list_admins_handler(message: Message, state: FSMContext, dialog_manager: DialogManager,
                               command: CommandObject):
     # Обычные админы из базы (set, чтобы быстро убирать дубли)
