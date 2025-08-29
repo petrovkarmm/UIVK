@@ -2,19 +2,24 @@ from aiogram import F
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.kbd import ScrollingGroup, Column, Select, Button, SwitchTo
-from aiogram_dialog.widgets.text import Format
+from aiogram_dialog.widgets.media import DynamicMedia
+from aiogram_dialog.widgets.text import Format, Multi
 
 from src.database.dataclasses.vacancy import VACANCY_KEY
 from src.database.dataclasses.vacancy_faq import VACANCY_FAQ_KEY
 from src.dialogs.admin_panel_dialog.admin_dialog_states import AdminPanelStatesGroup
 from src.dialogs.admin_panel_dialog.getters.admin_answer_and_question_getter import new_faq_answer_and_question_getter, \
     new_faq_question_getter
+from src.dialogs.admin_panel_dialog.getters.admin_vacancy_faq_file_getter import new_faq_file_getter
 from src.dialogs.admin_panel_dialog.getters.admin_vacancy_faq_getter import admin_vacancy_faq_getter
 from src.dialogs.admin_panel_dialog.getters.admin_vacancy_getter import all_admin_vacancy_getter, \
     admin_current_vacancy_getter
-from src.dialogs.admin_panel_dialog.message_inputs.new_vacancy_answer_question_input import new_faq_answer_input
-from src.dialogs.admin_panel_dialog.message_inputs.new_vacancy_faq_question_input import new_faq_question_input
+from src.dialogs.admin_panel_dialog.message_inputs.new_faq_answer_question_input import new_faq_answer_input
+from src.dialogs.admin_panel_dialog.message_inputs.new_faq_file_input import new_faq_file_input
+from src.dialogs.admin_panel_dialog.message_inputs.new_faq_question_input import new_faq_question_input
 from src.dialogs.admin_panel_dialog.message_inputs.new_vacancy_name_message_input import new_vacancy_title_input
+from src.dialogs.admin_panel_dialog.on_click_functions.admin_panel_file_adding_on_click import on_click_clear_file, \
+    on_click_next_file
 from src.dialogs.admin_panel_dialog.on_click_functions.admin_panel_change_hidden_status_on_click import \
     on_click_change_vacancy_hidden_status
 from src.dialogs.admin_panel_dialog.on_click_functions.admin_panel_create_new_faq_on_click import \
@@ -284,11 +289,15 @@ admin_vacancy_faq_answer_creating_window = Window(
 
 admin_vacancy_faq_accept_creating_window = Window(
     Format(
-        text='✅ <b>Проверьте вводимые данные:</b>\n\n'
-             '💼 <b>Вакансия:</b> {vacancy_title}\n\n'
-             '❓ <b>Вопрос:</b> {new_faq_question}\n'
-             '💬 <b>Ответ:</b> {new_faq_answer}'
+        text=(
+            "✅ <b>Проверьте вводимые данные:</b>\n\n"
+            "💼 <b>Вакансия:</b> {vacancy_title}\n\n"
+            "❓ <b>Вопрос:</b> {new_faq_question}\n"
+            "💬 <b>Ответ:</b> {new_faq_answer}\n"
+            "{files_info}"
+        )
     ),
+    DynamicMedia("media", when=F["media"]),  # Показываем только если media есть
     Button(
         id='create_faq',
         text=Format('➕ Создать FAQ'),
@@ -309,6 +318,32 @@ admin_vacancy_faq_accept_creating_window = Window(
     parse_mode="HTML"
 )
 
+admin_panel_vacancy_faq_file_creating_window = Window(
+    Format(
+        text=(
+            "📎 <b>Прикрепление файла</b>\n\n"
+            "Можно загрузить 1 файл любого формата (фото, видео, документ).\n"
+            "Количество загруженных файлов: {file_count}\n\n"
+            "Нажмите <b>Далее</b>, когда закончите загрузку файла."
+        )
+    ),
+    MessageInput(new_faq_file_input),
+    Button(
+        id="clear_file",
+        text=Format("♻️ Очистить"),
+        on_click=on_click_clear_file,
+        when=F["has_file"]  # показывается если есть файл
+    ),
+    Button(
+        id="next_file",
+        text=Format("⏭ Далее"),
+        on_click=on_click_next_file
+    ),
+    getter=new_faq_file_getter,
+    state=AdminPanelStatesGroup.admin_panel_vacancy_faq_files_creating,
+    parse_mode="HTML"
+)
+
 admin_panel_dialog = Dialog(
     admin_start_panel_window,
     admin_vacancy_faq_answer_window,
@@ -321,6 +356,7 @@ admin_panel_dialog = Dialog(
 
     admin_vacancy_faq_question_creating_window,
     admin_vacancy_faq_answer_creating_window,
+    admin_panel_vacancy_faq_file_creating_window,
 
     admin_vacancy_faq_accept_creating_window
 

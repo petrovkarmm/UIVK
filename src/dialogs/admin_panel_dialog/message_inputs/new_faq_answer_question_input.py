@@ -11,7 +11,7 @@ from src.dialogs.admin_panel_dialog.admin_dialog_states import AdminPanelStatesG
 
 async def new_faq_answer_input(
         message: Message,
-        _message_input,  # не используешь — подчёркни, чтобы линтер не ругался
+        _message_input,
         dialog_manager: DialogManager,
 ):
     new_faq_answer = (message.text or "").strip()
@@ -22,5 +22,5 @@ async def new_faq_answer_input(
     dialog_manager.dialog_data['new_faq_answer'] = new_faq_answer
 
     await dialog_manager.switch_to(
-        AdminPanelStatesGroup.admin_panel_vacancy_faq_accept_creating
+        AdminPanelStatesGroup.admin_panel_vacancy_faq_files_creating
     )

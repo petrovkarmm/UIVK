@@ -91,7 +91,7 @@ uivk_vacancy_faq_window = Window(
     ),
     SwitchTo(
         id='no_faq',
-        text=Format('Вопрос отсутствует 😢'),
+        text=Format('😢 Вопрос отсутствует'),
         state=UivkDialogStatesGroup.uivk_dialog_with_admins
     ),
     SwitchTo(
