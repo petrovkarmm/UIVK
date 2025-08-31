@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import List
 from src.database.configuration.connection import get_connection
+from src.settings import super_admins
 
 
 @dataclass
@@ -62,3 +63,11 @@ class Admin:
         rows = cursor.fetchall()
         conn.close()
         return [cls(id=row[0], telegram_id=row[1]) for row in rows]
+
+    @classmethod
+    def admin_status_checker(cls, user_id: int) -> bool:
+        return (str(user_id) in super_admins) or Admin.exists(user_id)
+
+    @classmethod
+    def super_admin_status_checker(cls, user_id: int) -> bool:
+        return str(user_id) in super_admins

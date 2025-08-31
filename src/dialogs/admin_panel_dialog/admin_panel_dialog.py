@@ -146,6 +146,7 @@ admin_vacancy_faq_deleting = Window(
         "<b>💬 Ответ:</b>\n{answer}",
         when=F["faq_found"]
     ),
+    DynamicMedia("media", when=F["media"]),
     Format(
         "😅 Ой, что-то пошло не так — FAQ не найден.",
         when=~F["faq_found"]
@@ -176,6 +177,7 @@ admin_vacancy_faq_answer = Window(
         "<b>💬 Ответ:</b>\n{answer}",
         when=F["faq_found"]
     ),
+    DynamicMedia("media", when=F["media"]),
     Format(
         "😅 Ой, что-то пошло не так — FAQ не найден.",
         when=~F["faq_found"]

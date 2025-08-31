@@ -1,6 +1,3 @@
-from pprint import pprint
-from typing import Dict, Any
-
 from aiogram.enums import ContentType
 from aiogram.types import InputMediaPhoto, InputMediaVideo, InputMediaDocument
 from aiogram_dialog import DialogManager

@@ -1,5 +1,3 @@
-from pprint import pprint
-
 from aiogram.enums import ContentType
 from aiogram_dialog import DialogManager
 from aiogram_dialog.api.entities import MediaAttachment, MediaId
@@ -14,7 +12,6 @@ async def vacancy_faq_answer_getter(dialog_manager: DialogManager, **_kwargs):
     if faq.media:
         file_type = faq.media["file_type"]
         file_id = faq.media["file_id"]
-        file_id = "asdasdasdqewqwe23123"
         if file_type == "photo":
             media = MediaAttachment(ContentType.PHOTO, file_id=MediaId(file_id))
         elif file_type == "video":
@@ -23,8 +20,6 @@ async def vacancy_faq_answer_getter(dialog_manager: DialogManager, **_kwargs):
             media = MediaAttachment(ContentType.DOCUMENT, file_id=MediaId(file_id))
     else:
         media = None
-
-    print(media)
 
     return {
         "faq_found": bool(faq),

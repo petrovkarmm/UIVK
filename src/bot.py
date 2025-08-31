@@ -1,6 +1,5 @@
 import datetime
 import asyncio
-from pprint import pprint
 
 from aiogram import Bot, Dispatcher, F
 from aiogram.enums import ParseMode

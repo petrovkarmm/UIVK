@@ -44,10 +44,18 @@ async def user_question_input(
             topic = Topic.create(user_id=user_id, topic_id=forum_topic.message_thread_id)
 
         # пытаемся отправить сообщение в топик
+        first_name = message.from_user.first_name or "Имя отсутствует"
+        last_name = message.from_user.last_name or "Фамилия отсутствует"
+        username = f"@{message.from_user.username}" if message.from_user.username else "Username отсутствует"
+
         await bot.send_message(
             chat_id=chat_group.group_id,
             message_thread_id=topic.topic_id,
-            text=f"📨 Сообщение от {message.from_user.full_name} ({user_id}) по вакансии {vacancy_data.title}:\n\n{user_question}"
+            text=(
+                f"📨 Сообщение от {first_name} {last_name} ({username}, ID: {user_id})\n"
+                f"По вакансии: {vacancy_data.title}\n\n"
+                f"{user_question}"
+            )
         )
 
     except TelegramBadRequest as e:

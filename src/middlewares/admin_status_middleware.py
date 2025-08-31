@@ -7,8 +7,9 @@ from aiogram_dialog import DialogManager
 
 from src.database.dataclasses.admin import Admin
 from src.dialogs.uivk_dialog.uivk_dialog_states import UivkDialogStatesGroup
-from src.settings import super_admins
-from src.utils.admin_status_checker import admin_status_checker
+from src.logs.logger import bot_logger
+
+
 
 
 class KickDeletedAdminFromAdminPanel(BaseMiddleware):
@@ -25,7 +26,7 @@ class KickDeletedAdminFromAdminPanel(BaseMiddleware):
 
         dialog_manager: DialogManager = data.get("dialog_manager")
 
-        admin_status = admin_status_checker(user_id)
+        admin_status = Admin.admin_status_checker(user_id)
 
         # Если это супер-админ или админ в базе - продолжаем
         if admin_status:
@@ -39,7 +40,7 @@ class KickDeletedAdminFromAdminPanel(BaseMiddleware):
                 await dialog_manager.reset_stack()
             except Exception as e:
                 # Логирование ошибки сброса стека
-                print(f"Ошибка reset_stack: {e}")
+                bot_logger.warning(f"Ошибка reset_stack: {e}")
             finally:
                 # Переводим в обычный диалог
                 await dialog_manager.start(
