@@ -4,6 +4,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     env_file:
       - .env
     volumes:
@@ -15,6 +18,9 @@ services:
   redis:
     container_name: uivk_redis
     image: redis:7.4
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     environment:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
     command: redis-server --requirepass ${REDIS_PASSWORD}
