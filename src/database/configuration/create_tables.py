@@ -52,7 +52,7 @@ def create_tables():
         vacancy_id INTEGER NOT NULL,
         question TEXT NOT NULL,
         answer TEXT NOT NULL,
-        file_ids TEXT DEFAULT '[]',
+        media JSON DEFAULT NULL,
         created DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (vacancy_id) REFERENCES vacancy(id) ON DELETE CASCADE

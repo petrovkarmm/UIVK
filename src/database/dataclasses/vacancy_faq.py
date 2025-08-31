@@ -15,85 +15,66 @@ class VacancyFAQ:
     answer: str
     created: str
     updated: str
-    file_id: Optional[str] = None  # только один файл
+    media: Optional[dict] = None
 
     @staticmethod
     def format_question(question: str) -> str:
-        """Обрезает вопрос, если он слишком длинный."""
         return f"{question[:20]}..." if len(question) > 22 else question
+
+    @classmethod
+    def _from_row(cls, row) -> "VacancyFAQ":
+        return cls(
+            id=row[0],
+            vacancy_id=row[1],
+            question=row[2],
+            answer=row[3],
+            created=row[4],
+            updated=row[5],
+            media=json.loads(row[6]) if row[6] else None
+        )
 
     @classmethod
     def get_by_vacancy_id(cls, vacancy_id: int) -> list["VacancyFAQ"]:
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT id, vacancy_id, question, answer, created, updated, file_id FROM faq WHERE vacancy_id = ?",
+            "SELECT id, vacancy_id, question, answer, created, updated, media FROM faq WHERE vacancy_id = ?",
             (vacancy_id,)
         )
         rows = cursor.fetchall()
         conn.close()
-
-        return [
-            cls(
-                id=row[0],
-                vacancy_id=row[1],
-                question=row[2],
-                answer=row[3],
-                created=row[4],
-                updated=row[5],
-                file_id=row[6] if row[6] else None
-            )
-            for row in rows
-        ]
+        return [cls._from_row(row) for row in rows]
 
     @classmethod
     def get_by_id(cls, faq_id: int) -> Optional["VacancyFAQ"]:
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT id, vacancy_id, question, answer, created, updated, file_id FROM faq WHERE id = ?",
+            "SELECT id, vacancy_id, question, answer, created, updated, media FROM faq WHERE id = ?",
             (faq_id,)
         )
         row = cursor.fetchone()
         conn.close()
-
-        return cls(
-            id=row[0],
-            vacancy_id=row[1],
-            question=row[2],
-            answer=row[3],
-            created=row[4],
-            updated=row[5],
-            file_id=row[6] if row[6] else None
-        ) if row else None
+        return cls._from_row(row) if row else None
 
     @classmethod
-    def create_new(cls, vacancy_id: int, question: str, answer: str, file_id: Optional[str] = None) -> "VacancyFAQ":
+    def create_new(cls, vacancy_id: int, question: str, answer: str, media: Optional[dict] = None) -> "VacancyFAQ":
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO faq (vacancy_id, question, answer, file_id) VALUES (?, ?, ?, ?)",
-            (vacancy_id, question, answer, file_id)
+            "INSERT INTO faq (vacancy_id, question, answer, media) VALUES (?, ?, ?, ?)",
+            (vacancy_id, question, answer, json.dumps(media) if media else None)
         )
         conn.commit()
 
         new_id = cursor.lastrowid
         cursor.execute(
-            "SELECT id, vacancy_id, question, answer, created, updated, file_id FROM faq WHERE id = ?",
+            "SELECT id, vacancy_id, question, answer, created, updated, media FROM faq WHERE id = ?",
             (new_id,)
         )
         row = cursor.fetchone()
         conn.close()
-
-        return cls(
-            id=row[0],
-            vacancy_id=row[1],
-            question=row[2],
-            answer=row[3],
-            created=row[4],
-            updated=row[5],
-            file_id=row[6] if row[6] else None
-        )
+        return cls._from_row(row)
 
     @classmethod
     def delete_by_id(cls, faq_id: int) -> None:

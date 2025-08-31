@@ -19,25 +19,27 @@ async def new_faq_answer_and_question_getter(dialog_manager: DialogManager, **_k
 
     # DynamicMedia
     if file_data:
-        ftype = file_data["type"]
-        fid = file_data["file_id"]
-        if ftype == "photo":
-            media = MediaAttachment(ContentType.PHOTO, file_id=MediaId(fid))
-        elif ftype == "video":
-            media = MediaAttachment(ContentType.VIDEO, file_id=MediaId(fid))
+        file_type = file_data["type"]
+        file_id = file_data["file_id"]
+        if file_type == "photo":
+            media = MediaAttachment(ContentType.PHOTO, file_id=MediaId(file_id))
+        elif file_type == "video":
+            media = MediaAttachment(ContentType.VIDEO, file_id=MediaId(file_id))
         else:
-            media = MediaAttachment(ContentType.DOCUMENT, file_id=MediaId(fid))
+            media = MediaAttachment(ContentType.DOCUMENT, file_id=MediaId(file_id))
     else:
         media = None
 
-    files_info = f"📎 Файл загружен: {file_data['type']}" if file_data else "📎 Файл не добавлен"
+    file_info = f"📎 Файл загружен: {file_data['type']}" if file_data else "📎 Файл не добавлен"
+
+    dialog_manager.dialog_data['media'] = media
 
     return {
         "new_faq_question": new_faq_question,
         "new_faq_answer": new_faq_answer,
         "vacancy_title": vacancy_data.title,
         "media": media,
-        "files_info": files_info
+        "file_info": file_info
     }
 
 

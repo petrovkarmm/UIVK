@@ -2,6 +2,7 @@ from aiogram import F
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.kbd import ScrollingGroup, Column, Select, Button, SwitchTo, Row
+from aiogram_dialog.widgets.media import DynamicMedia
 from aiogram_dialog.widgets.text import Format
 
 from src.database.dataclasses.vacancy import VACANCY_KEY
@@ -137,6 +138,7 @@ uivk_vacancy_faq_answer_window = Window(
              '💬 <b>Ответ:</b>\n{answer}',
         when=F["faq_found"]
     ),
+    DynamicMedia("media", when=F["media"]),
     Format(
         text='😅 Ой, что-то пошло не так — FAQ не найден.',
         when=~F["faq_found"]

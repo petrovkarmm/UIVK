@@ -18,6 +18,8 @@ from src.dialogs.admin_panel_dialog.message_inputs.new_faq_answer_question_input
 from src.dialogs.admin_panel_dialog.message_inputs.new_faq_file_input import new_faq_file_input
 from src.dialogs.admin_panel_dialog.message_inputs.new_faq_question_input import new_faq_question_input
 from src.dialogs.admin_panel_dialog.message_inputs.new_vacancy_name_message_input import new_vacancy_title_input
+from src.dialogs.admin_panel_dialog.on_click_functions.admin_panel_clear_media_data_on_click import \
+    on_click_clear_all_media_data_on_click
 from src.dialogs.admin_panel_dialog.on_click_functions.admin_panel_file_adding_on_click import on_click_clear_file, \
     on_click_next_file
 from src.dialogs.admin_panel_dialog.on_click_functions.admin_panel_change_hidden_status_on_click import \
@@ -117,10 +119,10 @@ admin_vacancy_faq_answer_window = Window(
         text=Format('🔄 Поменять статус'),
         on_click=on_click_change_vacancy_hidden_status
     ),
-    SwitchTo(
+    Button(
         id='to_creating',
         text=Format('➕ Добавить FAQ'),
-        state=AdminPanelStatesGroup.admin_panel_vacancy_faq_question_creating
+        on_click=on_click_clear_all_media_data_on_click
     ),
     SwitchTo(
         id='to_deleting',
@@ -294,7 +296,7 @@ admin_vacancy_faq_accept_creating_window = Window(
             "💼 <b>Вакансия:</b> {vacancy_title}\n\n"
             "❓ <b>Вопрос:</b> {new_faq_question}\n"
             "💬 <b>Ответ:</b> {new_faq_answer}\n"
-            "{files_info}"
+            "{file_info}"
         )
     ),
     DynamicMedia("media", when=F["media"]),  # Показываем только если media есть
@@ -306,7 +308,7 @@ admin_vacancy_faq_accept_creating_window = Window(
     SwitchTo(
         id='back_to_question',
         text=Format('⬅️ Назад'),
-        state=AdminPanelStatesGroup.admin_panel_vacancy_faq_answer_creating
+        state=AdminPanelStatesGroup.admin_panel_vacancy_faq_files_creating
     ),
     SwitchTo(
         id='back_to_start',
