@@ -8,6 +8,7 @@ services:
       - .env
     volumes:
       - ./src/database/database:/app/src/database/database
+      - ./src/logs:/app/src/logs
     depends_on:
       - redis
     restart: always

@@ -1,4 +1,3 @@
-import os
 from typing import Callable, Dict, Any, Awaitable, Union
 
 from aiogram import BaseMiddleware

@@ -10,8 +10,6 @@ from aiogram_dialog import DialogManager
 from src.database.dataclasses.admin import Admin
 from src.database.dataclasses.chat_group import ChatGroup
 from src.database.dataclasses.topic import Topic
-from src.dialogs.admin_panel_dialog.admin_dialog_states import AdminPanelStatesGroup
-from src.logs.logger import bot_logger
 from src.filters.admin_filters import IsAdminFilter, IsSuperAdminFilter
 
 admin_panel = Router()
