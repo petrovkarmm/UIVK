@@ -1,9 +1,9 @@
 from aiogram.enums import ContentType
-from aiogram.types import InputMediaPhoto, InputMediaVideo, InputMediaDocument
 from aiogram_dialog import DialogManager
 from aiogram_dialog.api.entities import MediaAttachment, MediaId
 
 from src.database.dataclasses.vacancy import Vacancy
+from src.logs.logger import bot_logger
 
 
 async def new_faq_answer_and_question_getter(dialog_manager: DialogManager, **_kwargs):
@@ -30,6 +30,9 @@ async def new_faq_answer_and_question_getter(dialog_manager: DialogManager, **_k
     file_info = f"📎 Файл загружен: {file_data['type']}" if file_data else "📎 Файл не добавлен"
 
     dialog_manager.dialog_data['media'] = media
+
+    bot_logger.warning(f"dialog_data: {dialog_manager.dialog_data}")
+    bot_logger.warning(F"media: {media}")
 
     return {
         "new_faq_question": new_faq_question,
