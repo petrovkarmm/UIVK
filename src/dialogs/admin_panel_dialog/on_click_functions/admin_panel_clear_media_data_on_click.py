@@ -12,5 +12,4 @@ async def on_click_clear_all_media_data_on_click(
         dialog_manager: DialogManager,
 ):
     dialog_manager.dialog_data.pop("new_faq_file", None)
-    dialog_manager.dialog_data.pop("media", None)
     await dialog_manager.switch_to(AdminPanelStatesGroup.admin_panel_vacancy_faq_question_creating)

@@ -29,11 +29,6 @@ async def new_faq_answer_and_question_getter(dialog_manager: DialogManager, **_k
 
     file_info = f"📎 Файл загружен: {file_data['type']}" if file_data else "📎 Файл не добавлен"
 
-    dialog_manager.dialog_data['media'] = media
-
-    bot_logger.warning(f"dialog_data: {dialog_manager.dialog_data}")
-    bot_logger.warning(F"media: {media}")
-
     return {
         "new_faq_question": new_faq_question,
         "new_faq_answer": new_faq_answer,
