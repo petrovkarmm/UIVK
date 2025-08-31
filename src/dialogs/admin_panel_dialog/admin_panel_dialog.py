@@ -333,15 +333,25 @@ admin_panel_vacancy_faq_file_creating_window = Window(
     ),
     MessageInput(new_faq_file_input),
     Button(
-        id="clear_file",
-        text=Format("♻️ Очистить"),
-        on_click=on_click_clear_file,
-        when=F["has_file"]  # показывается если есть файл
-    ),
-    Button(
         id="next_file",
         text=Format("⏭ Далее"),
         on_click=on_click_next_file
+    ),
+    Button(
+        id="clear_file",
+        text=Format("♻️ Очистить"),
+        on_click=on_click_clear_file,
+        when=F["has_file"]
+    ),
+    SwitchTo(
+        id="back_to_answer",
+        text=Format("⬅️ Назад"),
+        state=AdminPanelStatesGroup.admin_panel_vacancy_faq_answer_creating
+    ),
+    SwitchTo(
+        id='back_to_start',
+        text=Format('🏠 Назад в меню'),
+        state=AdminPanelStatesGroup.admin_panel_menu
     ),
     getter=new_faq_file_getter,
     state=AdminPanelStatesGroup.admin_panel_vacancy_faq_files_creating,
