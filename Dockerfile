@@ -1,14 +1,16 @@
 FROM python:3.11-slim
 
-WORKDIR /src
+WORKDIR /app
 
-COPY boiler_telegram_bot/requirements.txt .
+# Копируем файл зависимостей
+COPY requirements.txt .
 
+# Устанавливаем зависимости
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+# Копируем папку src
+COPY src/ ./src/
 
-RUN mkdir -p /app/tg_logs
+# Команда запуска бота
+CMD ["python", "-m", "src.bot"]
 
-# Запуск бота
-CMD ["python", "-m", "boiler_telegram_bot.bot"]
