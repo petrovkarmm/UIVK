@@ -139,9 +139,8 @@ async def admin_message_handler(message: Message):
 
     # отправляем сообщение пользователю
     try:
-        await message.bot.send_message(
+        await message.copy_to(
             chat_id=topic.user_id,
-            text=message.text
         )
         await message.answer("✨ Сообщение успешно отправлено!")
     except Exception as e:

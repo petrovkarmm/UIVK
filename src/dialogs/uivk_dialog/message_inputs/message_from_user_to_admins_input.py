@@ -19,10 +19,6 @@ async def user_question_input(
 ):
     vacancy_id = dialog_manager.dialog_data['vacancy_id']
     vacancy_data = Vacancy.get_by_id(vacancy_id=vacancy_id)
-    user_question = (message.text or "").strip()
-    if not user_question:
-        await message.answer('🤔 Похоже, вы отправили что-то не то...')
-        return
 
     user_id = message.from_user.id
     bot = message.bot
@@ -30,9 +26,7 @@ async def user_question_input(
     chat_group = ChatGroup.get()
     if not chat_group:
         await message.answer(exception_message)
-        bot_logger.warning(
-            "⚠️ Админская группа не настроена. "
-        )
+        bot_logger.warning("⚠️ Админская группа не настроена.")
         return
 
     topic = Topic.get_by_user_id(user_id)
@@ -43,7 +37,7 @@ async def user_question_input(
             forum_topic = await bot.create_forum_topic(chat_id=chat_group.group_id, name=str(user_id))
             topic = Topic.create(user_id=user_id, topic_id=forum_topic.message_thread_id)
 
-        # пытаемся отправить сообщение в топик
+        # --- 1. отправляем инфо-сообщение ---
         first_name = message.from_user.first_name or "Имя отсутствует"
         last_name = message.from_user.last_name or "Фамилия отсутствует"
         username = f"@{message.from_user.username}" if message.from_user.username else "Username отсутствует"
@@ -53,15 +47,20 @@ async def user_question_input(
             message_thread_id=topic.topic_id,
             text=(
                 f"📨 Сообщение от {first_name} {last_name} ({username}, ID: {user_id})\n"
-                f"По вакансии: {vacancy_data.title}\n\n"
-                f"{user_question}"
+                f"По вакансии: {vacancy_data.title}"
             )
         )
 
+        # --- 2. копируем оригинальное сообщение пользователя ---
+        await message.copy_to(
+            chat_id=chat_group.group_id,
+            message_thread_id=topic.topic_id
+        )
+
     except TelegramBadRequest as e:
-        # если топик удалили / message_thread_id не найден — пересоздаём и повторяем
+        # если топик удалили / message_thread_id не найден — пересоздаём
         text = str(e).lower()
-        if "message_thread_id" in text or "thread" in text or "not found" in text or "topic" in text:
+        if any(word in text for word in ["message_thread_id", "thread", "not found", "topic"]):
             try:
                 forum_topic = await bot.create_forum_topic(chat_id=chat_group.group_id, name=str(user_id))
                 Topic.update_topic_id(user_id=user_id, new_topic_id=forum_topic.message_thread_id)
@@ -69,11 +68,15 @@ async def user_question_input(
                 await bot.send_message(
                     chat_id=chat_group.group_id,
                     message_thread_id=forum_topic.message_thread_id,
-                    text=f"📨 Сообщение от {message.from_user.full_name} ({user_id}) по вакансии {vacancy_data.title}:\n\n{user_question}"
+                    text=f"📨 Сообщение от {message.from_user.full_name} ({user_id}) по вакансии {vacancy_data.title}:"
+                )
+                await message.copy_to(
+                    chat_id=chat_group.group_id,
+                    message_thread_id=forum_topic.message_thread_id
                 )
             except Exception as exception:
                 bot_logger.warning(
-                    f'❗ Не удалось доставить сообщение администраторам. Ошибка при создании топика. {user_id} {exception}'
+                    f'❗ Ошибка при создании топика. Сообщение от {user_id} не доставлено. {exception}'
                 )
                 await message.answer(exception_message)
                 return
@@ -83,9 +86,9 @@ async def user_question_input(
     except Exception as exception:
         await message.answer(exception_message)
         bot_logger.warning(
-            f'❗ Не удалось доставить сообщение администраторам. Ошибка при создании топика. {user_id} {exception}'
+            f'❗ Ошибка при доставке сообщения от {user_id}. {exception}'
         )
         return
 
     # подтверждение пользователю
-    await message.answer("✅ Ваше сообщение отправлено мененджерам. Они ответят вам в ближайшее время.")
+    await message.answer("✅ Ваше сообщение отправлено менеджерам. Они ответят вам в ближайшее время.")
