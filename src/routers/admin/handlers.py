@@ -1,10 +1,11 @@
 import os
 
-from aiogram import Router, F
+from aiogram import Router, F, types
 from aiogram.enums import ContentType
 from aiogram.filters import Command, CommandObject
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram_dialog import DialogManager
 
 from src.database.dataclasses.admin import Admin
@@ -138,9 +139,21 @@ async def admin_message_handler(message: Message):
 
     # отправляем сообщение пользователю
     try:
-        await message.copy_to(
-            chat_id=topic.user_id,
+        builder = InlineKeyboardBuilder()
+        builder.add(types.InlineKeyboardButton(
+            text="✍️ Ответить менеджеру",
+            callback_data="reply_to_admin")
         )
+
+        await message.bot.send_message(
+            chat_id=topic.user_id,
+            text="💬 Вам поступил ответ от менеджера. Нажмите кнопку ниже, чтобы продолжить переписку:",
+            reply_markup=builder.as_markup()
+        )
+
+        await message.copy_to(chat_id=topic.user_id)
+
         await message.answer("✨ Сообщение успешно отправлено!")
+
     except Exception as e:
         await message.answer(f"❌ Ошибка при отправке пользователю: {e}")
