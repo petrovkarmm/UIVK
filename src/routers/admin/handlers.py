@@ -119,7 +119,6 @@ async def list_admins_handler(message: Message, state: FSMContext, dialog_manage
 @admin_panel.message(
     F.chat.type.in_({"group", "supergroup"}),
     IsAdminFilter(),
-    F.text
 )
 async def admin_message_handler(message: Message):
     if message.from_user.is_bot:
