@@ -19,7 +19,7 @@ from src.dialogs.uivk_dialog.uivk_dialog_router import uivk_dialog_router
 from src.dialogs.uivk_dialog.uivk_dialog_states import UivkDialogStatesGroup
 from src.middlewares.logger_middleware import GlobalLogger
 from src.routers.admin.handlers import admin_panel
-from src.routers.user.handlers import start_router
+from src.routers.user.handlers import user_panel
 from src.logs.logger import bot_logger
 from src.settings import redis_connect_url, DEBUG, bot_test_token, bot_token
 
@@ -132,7 +132,7 @@ async def bot_start():
     dp.include_router(admin_panel)
     dp.include_router(admin_panel_dialog_router)
     dp.include_router(uivk_dialog_router)
-    dp.include_router(start_router)
+    dp.include_router(user_panel)
 
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
