@@ -1,7 +1,7 @@
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
-from aiogram_dialog import DialogManager
+from aiogram_dialog import DialogManager, ShowMode
 
 from src.dialogs.uivk_dialog.uivk_dialog_states import UivkDialogStatesGroup
 from aiogram import Router, F
@@ -32,4 +32,5 @@ async def on_reply_to_admin(
 
     await dialog_manager.start(
         state=UivkDialogStatesGroup.uivk_dialog_with_admins,
+        show_mode=ShowMode.DELETE_AND_SEND
     )
