@@ -18,8 +18,12 @@ async def user_question_input(
         dialog_manager: DialogManager,
 ):
     vacancy_id = dialog_manager.dialog_data['vacancy_id']
-    vacancy_data = Vacancy.get_by_id(vacancy_id=vacancy_id)
-
+    if vacancy_id:
+        vacancy_data = Vacancy.get_by_id(vacancy_id=vacancy_id)
+        vacancy_title = vacancy_data.title
+    else:
+        vacancy_title = "Данные отсутствуют.
+        
     user_id = message.from_user.id
     bot = message.bot
 
@@ -47,7 +51,7 @@ async def user_question_input(
             message_thread_id=topic.topic_id,
             text=(
                 f"📨 Сообщение от {first_name} {last_name} ({username}, ID: {user_id})\n"
-                f"По вакансии: {vacancy_data.title}"
+                f"По вакансии: {vacancy_title}"
             )
         )
 
@@ -68,7 +72,7 @@ async def user_question_input(
                 await bot.send_message(
                     chat_id=chat_group.group_id,
                     message_thread_id=forum_topic.message_thread_id,
-                    text=f"📨 Сообщение от {message.from_user.full_name} ({user_id}) по вакансии {vacancy_data.title}:"
+                    text=f"📨 Сообщение от {message.from_user.full_name} ({user_id}) по вакансии {vacancy_title}:"
                 )
                 await message.copy_to(
                     chat_id=chat_group.group_id,
