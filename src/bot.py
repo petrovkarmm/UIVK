@@ -26,15 +26,15 @@ from src.settings import redis_connect_url, DEBUG, bot_test_token, bot_token
 
 async def bot_start():
     if DEBUG:
+        dp = Dispatcher()
+        bot = Bot(token=bot_test_token)
+    else:
+
         storage = RedisStorage.from_url(
             redis_connect_url, key_builder=DefaultKeyBuilder(with_destiny=True)
         )
         dp = Dispatcher(storage=storage)
         bot = Bot(token=bot_token)
-
-    else:
-        dp = Dispatcher()
-        bot = Bot(token=bot_test_token)
 
     async def error_unknown_intent_handler(event: ErrorEvent, dialog_manager: DialogManager):
         """Обработка ошибок UnknownIntent / OutdatedIntent"""
