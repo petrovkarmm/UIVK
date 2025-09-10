@@ -30,7 +30,6 @@ async def on_reply_to_admin(
 ):
     await callback.answer()
 
-    await dialog_manager.start(
+    await dialog_manager.switch_to(
         state=UivkDialogStatesGroup.uivk_dialog_with_admins,
-        show_mode=ShowMode.DELETE_AND_SEND
     )
