@@ -22,7 +22,7 @@ async def user_question_input(
         vacancy_data = Vacancy.get_by_id(vacancy_id=vacancy_id)
         vacancy_title = vacancy_data.title
     else:
-        vacancy_title = "Данные отсутствуют.
+        vacancy_title = "Данные отсутствуют."
         
     user_id = message.from_user.id
     bot = message.bot
