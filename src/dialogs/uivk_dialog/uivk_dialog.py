@@ -11,6 +11,7 @@ from src.dialogs.uivk_dialog.getters.vacancy_faq_answer_getter import vacancy_fa
 from src.dialogs.uivk_dialog.getters.vacancy_faq_getter import vacancy_faq_getter, vacancy_faq_id_getter
 from src.dialogs.uivk_dialog.getters.vacancy_getter import vacancy_id_getter, all_unhidden_vacancy_getter
 from src.dialogs.uivk_dialog.message_inputs.message_from_user_to_admins_input import user_question_input
+from src.dialogs.uivk_dialog.on_click_functions.go_to_chat_with_manager import on_click_go_to_chat_with_manager
 from src.dialogs.uivk_dialog.on_click_functions.to_admin_panel_on_click import on_click_go_to_admin_panel
 from src.dialogs.uivk_dialog.on_click_functions.vacancy_faq_on_click import on_click_vacancy_faq_selected
 from src.dialogs.uivk_dialog.on_click_functions.vacancy_on_click import on_click_vacancy_selected
@@ -47,6 +48,11 @@ uivk_start_window = Window(
         text=Format('🔄 Обновить'),
         on_click=None,
         when=~F['vacancy_data_flag']
+    ),
+    Button(
+        id='chat_with_manager',
+        text=Format('🆘 Чат с менеджером'),
+        on_click=on_click_go_to_chat_with_manager,
     ),
     Button(
         id='to_admin_panel',

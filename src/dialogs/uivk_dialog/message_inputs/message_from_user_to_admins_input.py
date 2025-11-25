@@ -17,12 +17,16 @@ async def user_question_input(
         _message_input,
         dialog_manager: DialogManager,
 ):
-    vacancy_id = dialog_manager.dialog_data['vacancy_id']
-    if vacancy_id:
-        vacancy_data = Vacancy.get_by_id(vacancy_id=vacancy_id)
-        vacancy_title = vacancy_data.title
+    try:
+        vacancy_id = dialog_manager.dialog_data['vacancy_id']
+    except KeyError:
+        vacancy_title = "Вопрос через чат с менеджером."
     else:
-        vacancy_title = "Данные отсутствуют."
+        if vacancy_id:
+            vacancy_data = Vacancy.get_by_id(vacancy_id=vacancy_id)
+            vacancy_title = vacancy_data.title
+        else:
+            vacancy_title = "Вопрос через чат с менеджером."
         
     user_id = message.from_user.id
     bot = message.bot

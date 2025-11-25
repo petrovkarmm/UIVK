@@ -79,7 +79,7 @@ async def bot_start():
                 )
 
         if not isinstance(exception, (UnknownIntent, OutdatedIntent)):
-            bot_logger.warning(f"Необработанная ошибка: {exception}")
+            bot_logger.warning(f"Необработанная ошибка: {exception} | {event}")
         else:
             # Пытаемся удалить сообщение с "битой" callback-кнопкой
             try:

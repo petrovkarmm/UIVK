@@ -32,11 +32,7 @@ async def add_new_admin(message: Message, state: FSMContext, dialog_manager: Dia
 
 @admin_panel.message(Command("set_group"), IsSuperAdminFilter())
 async def set_group(message: Message, state: FSMContext, dialog_manager: DialogManager, command: CommandObject):
-    try:
-        group_id = int(command.args.strip())
-    except (ValueError, AttributeError):
-        await message.answer("❌ Использование: /set_group <group_id>")
-        return
+    group_id = message.chat.id
 
     cg = ChatGroup.create(group_id=group_id)
     await message.answer(
@@ -140,19 +136,12 @@ async def admin_message_handler(message: Message):
 
     # отправляем сообщение пользователю
     try:
-        builder = InlineKeyboardBuilder()
-        builder.add(types.InlineKeyboardButton(
-            text="✍️ Ответить менеджеру",
-            callback_data="reply_to_admin")
-        )
 
         await message.bot.send_message(
             chat_id=topic.user_id,
-            text="💬 Вам поступил ответ от менеджера. Нажмите кнопку ниже, чтобы продолжить переписку:",
-            reply_markup=builder.as_markup()
+            text=f"{message.text}"
+                 "\n💬 Перейдите в чат с поддержкой, чтобы продолжить переписку.",
         )
-
-        await message.copy_to(chat_id=topic.user_id)
 
         await message.answer("✨ Сообщение успешно отправлено!")
 
