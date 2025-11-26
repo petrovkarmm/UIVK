@@ -127,7 +127,7 @@ uivk_dialog_with_admins_window = Window(
     SwitchTo(
         id='back_to_faq',
         text=Format('⬅️ Назад'),
-        state=UivkDialogStatesGroup.uivk_vacancy_and_questions
+        state=UivkDialogStatesGroup.uivk_start_menu
     ),
     SwitchTo(
         id="to_vacancy",
