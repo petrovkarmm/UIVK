@@ -48,6 +48,27 @@ class Vacancy:
         conn.close()
 
     @classmethod
+    def update_title(cls, vacancy_id: int, new_title: str) -> None:
+        """Обновляет название вакансии по её id."""
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT id FROM vacancy WHERE id = ?", (vacancy_id,))
+        row = cursor.fetchone()
+
+        if row is None:
+            conn.close()
+            raise ValueError(f"Vacancy with id={vacancy_id} not found")
+
+        cursor.execute(
+            "UPDATE vacancy SET title = ?, updated = CURRENT_TIMESTAMP WHERE id = ?",
+            (new_title, vacancy_id)
+        )
+
+        conn.commit()
+        conn.close()
+
+    @classmethod
     def get_all(cls, include_hidden: bool = True) -> List["Vacancy"]:
         """Получает все вакансии. Если include_hidden=False, то только не скрытые."""
         conn = get_connection()

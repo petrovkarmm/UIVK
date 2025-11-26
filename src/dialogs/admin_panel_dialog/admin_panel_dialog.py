@@ -1,7 +1,7 @@
 from aiogram import F
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.input import MessageInput
-from aiogram_dialog.widgets.kbd import ScrollingGroup, Column, Select, Button, SwitchTo
+from aiogram_dialog.widgets.kbd import ScrollingGroup, Column, Select, Button, SwitchTo, Row
 from aiogram_dialog.widgets.media import DynamicMedia
 from aiogram_dialog.widgets.text import Format, Multi
 
@@ -14,10 +14,11 @@ from src.dialogs.admin_panel_dialog.getters.admin_vacancy_faq_file_getter import
 from src.dialogs.admin_panel_dialog.getters.admin_vacancy_faq_getter import admin_vacancy_faq_getter
 from src.dialogs.admin_panel_dialog.getters.admin_vacancy_getter import all_admin_vacancy_getter, \
     admin_current_vacancy_getter
+from src.dialogs.admin_panel_dialog.message_inputs.change_vacancy_name_input import change_vacancy_name_input
 from src.dialogs.admin_panel_dialog.message_inputs.new_faq_answer_question_input import new_faq_answer_input
 from src.dialogs.admin_panel_dialog.message_inputs.new_faq_file_input import new_faq_file_input
 from src.dialogs.admin_panel_dialog.message_inputs.new_faq_question_input import new_faq_question_input
-from src.dialogs.admin_panel_dialog.message_inputs.new_vacancy_name_message_input import new_vacancy_title_input
+from src.dialogs.admin_panel_dialog.message_inputs.new_vacancy_name_input import new_vacancy_title_input
 from src.dialogs.admin_panel_dialog.on_click_functions.admin_panel_clear_media_data_on_click import \
     on_click_clear_all_media_data_on_click
 from src.dialogs.admin_panel_dialog.on_click_functions.admin_panel_file_adding_on_click import on_click_clear_file, \
@@ -114,10 +115,13 @@ admin_vacancy_faq_answer_window = Window(
         hide_on_single_page=True,
         when=F['vacancy_faq_data_flag']
     ),
-    Button(
-        id='change_hidden',
-        text=Format('🔄 Поменять статус'),
-        on_click=on_click_change_vacancy_hidden_status
+    Row(
+        Button(id='change_hidden',
+               text=Format('🔄 Поменять статус'),
+               on_click=on_click_change_vacancy_hidden_status),
+        SwitchTo(id='change_name',
+                 text=Format('🔄 Поменять название'),
+                 state=AdminPanelStatesGroup.admin_panel_vacancy_name_change),
     ),
     Button(
         id='to_creating',
@@ -136,6 +140,27 @@ admin_vacancy_faq_answer_window = Window(
     ),
     getter=admin_vacancy_faq_getter,
     state=AdminPanelStatesGroup.admin_panel_vacancy_and_questions,
+    parse_mode="HTML"
+)
+
+admin_vacancy_name_change = Window(
+    Format(
+        text="✍️ <b>Введите новое название вакансии:</b>"
+    ),
+    MessageInput(
+        change_vacancy_name_input
+    ),
+    SwitchTo(
+        id="to_admin_vacancy",
+        text=Format("⬅️ Назад"),
+        state=AdminPanelStatesGroup.admin_panel_vacancy_and_questions
+    ),
+    SwitchTo(
+        id='back_to_start',
+        text=Format('⬅️ Назад в меню'),
+        state=AdminPanelStatesGroup.admin_panel_menu
+    ),
+    state=AdminPanelStatesGroup.admin_panel_vacancy_name_change,
     parse_mode="HTML"
 )
 
@@ -372,6 +397,8 @@ admin_panel_dialog = Dialog(
     admin_vacancy_faq_answer_creating_window,
     admin_panel_vacancy_faq_file_creating_window,
 
-    admin_vacancy_faq_accept_creating_window
+    admin_vacancy_faq_accept_creating_window,
+
+    admin_vacancy_name_change
 
 )
