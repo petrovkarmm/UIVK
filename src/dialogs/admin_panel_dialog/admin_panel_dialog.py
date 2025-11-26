@@ -115,14 +115,12 @@ admin_vacancy_faq_answer_window = Window(
         hide_on_single_page=True,
         when=F['vacancy_faq_data_flag']
     ),
-    Row(
-        Button(id='change_hidden',
-               text=Format('🔄 Поменять статус'),
-               on_click=on_click_change_vacancy_hidden_status),
-        SwitchTo(id='change_name',
-                 text=Format('🔄 Поменять название'),
-                 state=AdminPanelStatesGroup.admin_panel_vacancy_name_change),
-    ),
+    Button(id='change_hidden',
+           text=Format('🔄 Поменять статус'),
+           on_click=on_click_change_vacancy_hidden_status),
+    SwitchTo(id='change_name',
+             text=Format('🔄 Поменять название'),
+             state=AdminPanelStatesGroup.admin_panel_vacancy_name_change),
     Button(
         id='to_creating',
         text=Format('➕ Добавить FAQ'),
