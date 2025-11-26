@@ -125,14 +125,22 @@ uivk_dialog_with_admins_window = Window(
         user_question_input
     ),
     SwitchTo(
+        id='back_to_menu',
+        text=Format('⬅️ Назад'),
+        state=UivkDialogStatesGroup.uivk_start_menu,
+        when=~F['dialog_data']['vacancy_id']
+    ),
+    SwitchTo(
         id='back_to_faq',
         text=Format('⬅️ Назад'),
-        state=UivkDialogStatesGroup.uivk_start_menu
+        state=UivkDialogStatesGroup.uivk_vacancy_and_questions,
+        when=F['dialog_data']['vacancy_id']
     ),
     SwitchTo(
         id="to_vacancy",
         text=Format('🏠 В меню вакансий'),
-        state=UivkDialogStatesGroup.uivk_start_menu
+        state=UivkDialogStatesGroup.uivk_start_menu,
+        when=F['dialog_data']['vacancy_id']
     ),
     state=UivkDialogStatesGroup.uivk_dialog_with_admins,
     parse_mode='HTML'
