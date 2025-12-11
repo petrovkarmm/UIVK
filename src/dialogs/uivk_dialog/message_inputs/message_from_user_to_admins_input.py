@@ -7,6 +7,7 @@ from aiogram_dialog import (
 from src.database.dataclasses.chat_group import ChatGroup
 from src.database.dataclasses.topic import Topic
 from src.database.dataclasses.vacancy import Vacancy
+from src.dialogs.uivk_dialog.uivk_dialog_states import UivkDialogStatesGroup
 from src.logs.logger import bot_logger
 
 exception_message = "❗ Не удалось доставить сообщение HR-менеджерам. Пожалуйста, сообщите об ошибке сотруднику через HH."
@@ -17,6 +18,8 @@ async def user_question_input(
         _message_input,
         dialog_manager: DialogManager,
 ):
+    vacancy_chat = False
+
     try:
         vacancy_id = dialog_manager.dialog_data['vacancy_id']
     except KeyError:
@@ -25,6 +28,7 @@ async def user_question_input(
         if vacancy_id:
             vacancy_data = Vacancy.get_by_id(vacancy_id=vacancy_id)
             vacancy_title = vacancy_data.title
+            vacancy_chat = True
         else:
             vacancy_title = "Вопрос через чат с менеджером."
         
@@ -100,3 +104,13 @@ async def user_question_input(
 
     # подтверждение пользователю
     await message.answer("✅ Ваше сообщение отправлено менеджерам. Они ответят вам в ближайшее время.")
+
+
+    if vacancy_chat:
+        await dialog_manager.switch_to(
+            UivkDialogStatesGroup.uivk_vacancy_and_questions
+        )
+    else:
+        await dialog_manager.switch_to(
+            UivkDialogStatesGroup.uivk_start_menu
+        )
