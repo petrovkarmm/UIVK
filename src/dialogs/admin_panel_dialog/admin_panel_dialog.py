@@ -212,11 +212,6 @@ admin_vacancy_faq_answer = Window(
         when=~F["faq_found"]
     ),
     SwitchTo(
-        id='to_delete_faq',
-        text=Format('🗑️ Удалить FAQ'),
-        state=AdminPanelStatesGroup.admin_panel_vacancy_faq_deleting
-    ),
-    SwitchTo(
         id="change_question",
         text=Format('🔄 Поменять вопрос'),
         state=AdminPanelStatesGroup.admin_panel_vacancy_faq_changing_question
@@ -225,6 +220,11 @@ admin_vacancy_faq_answer = Window(
         id="change_answer",
         text=Format('🔄 Поменять ответ'),
         state=AdminPanelStatesGroup.admin_panel_vacancy_faq_changing_answer
+    ),
+    SwitchTo(
+        id='to_delete_faq',
+        text=Format('🗑️ Удалить FAQ'),
+        state=AdminPanelStatesGroup.admin_panel_vacancy_faq_deleting
     ),
     SwitchTo(
         id="to_admin_faq",
