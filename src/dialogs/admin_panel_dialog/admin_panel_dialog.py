@@ -222,7 +222,7 @@ admin_vacancy_faq_answer = Window(
         state=AdminPanelStatesGroup.admin_panel_vacancy_faq_changing_question
     ),
     SwitchTo(
-        id="change_question",
+        id="change_answer",
         text=Format('🔄 Поменять ответ'),
         state=AdminPanelStatesGroup.admin_panel_vacancy_faq_changing_answer
     ),
