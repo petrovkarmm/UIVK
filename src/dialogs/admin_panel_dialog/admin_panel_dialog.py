@@ -14,6 +14,10 @@ from src.dialogs.admin_panel_dialog.getters.admin_vacancy_faq_file_getter import
 from src.dialogs.admin_panel_dialog.getters.admin_vacancy_faq_getter import admin_vacancy_faq_getter
 from src.dialogs.admin_panel_dialog.getters.admin_vacancy_getter import all_admin_vacancy_getter, \
     admin_current_vacancy_getter
+from src.dialogs.admin_panel_dialog.message_inputs.change_vacancy_faq_answer_input import \
+    change_vacancy_faq_answer_input
+from src.dialogs.admin_panel_dialog.message_inputs.change_vacancy_faq_question_input import \
+    change_vacancy_faq_question_input
 from src.dialogs.admin_panel_dialog.message_inputs.change_vacancy_name_input import change_vacancy_name_input
 from src.dialogs.admin_panel_dialog.message_inputs.new_faq_answer_question_input import new_faq_answer_input
 from src.dialogs.admin_panel_dialog.message_inputs.new_faq_file_input import new_faq_file_input
@@ -210,6 +214,14 @@ admin_vacancy_faq_answer = Window(
         text=Format('🗑️ Удалить FAQ'),
         state=AdminPanelStatesGroup.admin_panel_vacancy_faq_deleting
     ),
+    SwitchTo(id="change_question",
+             text=Format('🔄 Поменять вопрос'),
+             state=AdminPanelStatesGroup.admin_panel_vacancy_faq_changing_question
+             ),
+    SwitchTo(id="change_question",
+             text=Format('🔄 Поменять ответ'),
+             state=AdminPanelStatesGroup.admin_panel_vacancy_faq_changing_answer
+             ),
     SwitchTo(
         id="to_admin_faq",
         text=Format("⬅️ Назад"),
@@ -267,6 +279,48 @@ admin_vacancy_creating_window = Window(
         state=AdminPanelStatesGroup.admin_panel_menu
     ),
     state=AdminPanelStatesGroup.admin_panel_vacancy_creating,
+    parse_mode="HTML"
+)
+
+admin_vacancy_faq_question_change = Window(
+    Format(
+        text="✍️ <b>Введите новый вопрос:</b>"
+    ),
+    MessageInput(
+        change_vacancy_faq_question_input
+    ),
+    SwitchTo(
+        id="to_admin_faq",
+        text=Format("⬅️ Назад"),
+        state=AdminPanelStatesGroup.admin_panel_vacancy_faq_answer
+    ),
+    SwitchTo(
+        id='back_to_start',
+        text=Format('⬅️ Назад в меню'),
+        state=AdminPanelStatesGroup.admin_panel_menu
+    ),
+    state=AdminPanelStatesGroup.admin_panel_vacancy_faq_changing_question,
+    parse_mode="HTML"
+)
+
+admin_vacancy_faq_answer_change = Window(
+    Format(
+        text="✍️ <b>Введите новый ответ:</b>"
+    ),
+    MessageInput(
+        change_vacancy_faq_answer_input
+    ),
+    SwitchTo(
+        id="to_admin_faq",
+        text=Format("⬅️ Назад"),
+        state=AdminPanelStatesGroup.admin_panel_vacancy_faq_answer
+    ),
+    SwitchTo(
+        id='back_to_start',
+        text=Format('⬅️ Назад в меню'),
+        state=AdminPanelStatesGroup.admin_panel_menu
+    ),
+    state=AdminPanelStatesGroup.admin_panel_vacancy_faq_changing_answer,
     parse_mode="HTML"
 )
 
@@ -397,6 +451,9 @@ admin_panel_dialog = Dialog(
 
     admin_vacancy_faq_accept_creating_window,
 
-    admin_vacancy_name_change
+    admin_vacancy_name_change,
+
+    admin_vacancy_faq_question_change,
+    admin_vacancy_faq_answer_change
 
 )

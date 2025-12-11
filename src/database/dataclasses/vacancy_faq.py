@@ -83,3 +83,43 @@ class VacancyFAQ:
         cursor.execute("DELETE FROM faq WHERE id = ?", (faq_id,))
         conn.commit()
         conn.close()
+
+    @classmethod
+    def update_question(cls, faq_id: int, new_question: str) -> Optional["VacancyFAQ"]:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(
+            "UPDATE faq SET question = ?, updated = CURRENT_TIMESTAMP WHERE id = ?",
+            (new_question, faq_id)
+        )
+        conn.commit()
+
+        cursor.execute(
+            "SELECT id, vacancy_id, question, answer, created, updated, media FROM faq WHERE id = ?",
+            (faq_id,)
+        )
+        row = cursor.fetchone()
+        conn.close()
+
+        return cls._from_row(row) if row else None
+
+    @classmethod
+    def update_answer(cls, faq_id: int, new_answer: str) -> Optional["VacancyFAQ"]:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(
+            "UPDATE faq SET answer = ?, updated = CURRENT_TIMESTAMP WHERE id = ?",
+            (new_answer, faq_id)
+        )
+        conn.commit()
+
+        cursor.execute(
+            "SELECT id, vacancy_id, question, answer, created, updated, media FROM faq WHERE id = ?",
+            (faq_id,)
+        )
+        row = cursor.fetchone()
+        conn.close()
+
+        return cls._from_row(row) if row else None
