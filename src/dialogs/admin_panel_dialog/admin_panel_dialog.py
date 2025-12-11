@@ -119,12 +119,14 @@ admin_vacancy_faq_answer_window = Window(
         hide_on_single_page=True,
         when=F['vacancy_faq_data_flag']
     ),
-    Button(id='change_hidden',
-           text=Format('🔄 Поменять статус'),
-           on_click=on_click_change_vacancy_hidden_status),
-    SwitchTo(id='change_name',
-             text=Format('🔄 Поменять название'),
-             state=AdminPanelStatesGroup.admin_panel_vacancy_name_change),
+    Button(
+        id='change_hidden',
+        text=Format('🔄 Поменять статус'),
+        on_click=on_click_change_vacancy_hidden_status),
+    SwitchTo(
+        id='change_name',
+        text=Format('🔄 Поменять название'),
+        state=AdminPanelStatesGroup.admin_panel_vacancy_name_change),
     Button(
         id='to_creating',
         text=Format('➕ Добавить FAQ'),
@@ -214,14 +216,16 @@ admin_vacancy_faq_answer = Window(
         text=Format('🗑️ Удалить FAQ'),
         state=AdminPanelStatesGroup.admin_panel_vacancy_faq_deleting
     ),
-    SwitchTo(id="change_question",
-             text=Format('🔄 Поменять вопрос'),
-             state=AdminPanelStatesGroup.admin_panel_vacancy_faq_changing_question
-             ),
-    SwitchTo(id="change_question",
-             text=Format('🔄 Поменять ответ'),
-             state=AdminPanelStatesGroup.admin_panel_vacancy_faq_changing_answer
-             ),
+    SwitchTo(
+        id="change_question",
+        text=Format('🔄 Поменять вопрос'),
+        state=AdminPanelStatesGroup.admin_panel_vacancy_faq_changing_question
+    ),
+    SwitchTo(
+        id="change_question",
+        text=Format('🔄 Поменять ответ'),
+        state=AdminPanelStatesGroup.admin_panel_vacancy_faq_changing_answer
+    ),
     SwitchTo(
         id="to_admin_faq",
         text=Format("⬅️ Назад"),
